@@ -436,7 +436,7 @@ def cmd_export_sheets(args) -> int:
     logger.info("CSV tabs: %s", [p.name for p in csv_paths])
     logger.info("XLSX workbook: %s", xlsx_path)
 
-    if args.upload:
+    if getattr(args, "upload", False):
         ok = upload_sheets(storage, settings.sheets_credentials_file,
                            settings.sheets_spreadsheet_id)
         logger.info("Google Sheets upload: %s", "OK" if ok else "skipped/failed")
