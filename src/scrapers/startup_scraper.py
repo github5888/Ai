@@ -18,6 +18,7 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
+import os
 import re
 import urllib.parse
 from typing import Any, Iterable
@@ -98,6 +99,19 @@ LISTICLE_SOURCES = [
     {"url": "https://builtin.com/artificial-intelligence/ai-companies-nyc",
      "source": "Builtin AI Directory NYC", "kind": "builtin"},
 ]
+
+# Bulk startup-directory datasets published on GitHub (fetchable anywhere).
+# 1) Y Combinator directory export - community-maintained, auto-refreshed CSV
+#    of the public ycombinator.com/companies directory (tags flag AI startups).
+YC_CSV_URL = os.environ.get(
+    "YC_COMPANIES_CSV_URL",
+    "https://raw.githubusercontent.com/akshaybhalotia/yc_company_scraper/main/data/yc_essential_data.csv",
+)
+# 2) AI companies/services directory with employee bands.
+AI_SERVICES_CSV_URL = os.environ.get(
+    "AI_SERVICES_CSV_URL",
+    "https://raw.githubusercontent.com/Sumbal-Naz23/AI-Companies-Dataset/main/AI_Companies.csv",
+)
 
 _WIKIDATA_SPARQL = "https://query.wikidata.org/sparql"
 
@@ -340,6 +354,130 @@ async def collect_listicles(fetcher: Fetcher) -> list[dict]:
     return list(records.values())
 
 
+def parse_yc_csv(csv_text: str, limit: int = 4000) -> list[dict]:
+    """AI startups from the YC directory export (tags flag + AI pitch filter).
+
+    team_size comes straight from the dataset; it is kept as-is and described
+    in the record so nothing is invented."""
+    import io
+
+    import pandas as pd
+
+    frame = pd.read_csv(io.StringIO(csv_text))
+    if "name" not in frame.columns:
+        return []
+
+    def has_ai_tag(tags: Any) -> bool:
+        if not isinstance(tags, str) or not tags.startswith("["):
+            return False
+        try:
+            return any("Artificial Intelligence" in str(t) for t in json.loads(tags))
+        except json.JSONDecodeError:
+            return False
+
+    pitch_re = re.compile(
+        r"\bAI\b|artificial intelligence|machine learning|\bLLMs?\b|deep learning",
+        re.IGNORECASE,
+    )
+    mask = (
+        frame["tags"].apply(has_ai_tag)
+        | frame.get("one_liner", pd.Series([""] * len(frame))).astype(str).str.contains(pitch_re, na=False)
+        | frame.get("long_description", pd.Series([""] * len(frame))).astype(str).str.contains(pitch_re, na=False)
+    )
+    selected = frame[mask].head(limit)
+
+    records: list[dict] = []
+    for row in selected.itertuples(index=False):
+        name = norm_space(str(getattr(row, "name", "")))
+        slug = norm_space(str(getattr(row, "slug", "")))
+        if not name:
+            continue
+        team_size = getattr(row, "team_size", None)
+        employee_count = None
+        try:
+            if team_size is not None and str(team_size) not in ("", "nan", "None"):
+                employee_count = int(float(team_size))
+        except (TypeError, ValueError):
+            employee_count = None
+        description = norm_space(str(getattr(row, "one_liner", "") or ""))[:300] or None
+        if employee_count:
+            description = f"{description or ''} (YC team size: {employee_count})".strip()
+        records.append({
+            "entityName": title_case_entity(name),
+            "employeeCount": employee_count,
+            "description": description,
+            "sourceName": "Y Combinator AI Startups (directory export)",
+            "sourceUrl": f"https://www.ycombinator.com/companies/{slug}" if slug else None,
+            "sourceCategory": "directory",
+        })
+    return records
+
+
+def parse_ai_services_csv(csv_text: str, limit: int = 4000) -> list[dict]:
+    """AI companies from an AI-services directory CSV (employee bands kept
+    verbatim in the description - ranges are never converted into fake ints)."""
+    import io
+
+    import pandas as pd
+
+    frame = pd.read_csv(io.StringIO(csv_text))
+    name_col = next((c for c in frame.columns if "company" in c.lower()), None)
+    if not name_col:
+        return []
+    employees_col = next((c for c in frame.columns if "employee" in c.lower()), None)
+    website_col = next((c for c in frame.columns if "website" in c.lower()), None)
+    location_col = next((c for c in frame.columns if "location" in c.lower()), None)
+
+    records: list[dict] = []
+    for row in frame.head(limit).itertuples(index=False):
+        row_dict = dict(zip(frame.columns, row))
+        name = norm_space(str(row_dict.get(name_col, "")))
+        if not name or len(name) > 70:
+            continue
+        employees = norm_space(str(row_dict.get(employees_col, ""))) if employees_col else ""
+        description_bits = []
+        if employees and employees.lower() != "nan":
+            description_bits.append(f"Employees: {employees}")
+        location = norm_space(str(row_dict.get(location_col, ""))) if location_col else ""
+        if location and location.lower() != "nan":
+            description_bits.append(f"HQ: {location}")
+        website = norm_space(str(row_dict.get(website_col, ""))) if website_col else ""
+        source_url = website if website.startswith("http") else None
+        records.append({
+            "entityName": title_case_entity(name),
+            "employeeCount": None,  # range strings are not honest ints
+            "description": "; ".join(description_bits) or None,
+            "sourceName": "AI Companies Directory (services export)",
+            "sourceUrl": source_url,
+            "sourceCategory": "directory",
+        })
+    return records
+
+
+async def collect_directory_datasets(fetcher: Fetcher) -> list[dict]:
+    """Fetch the bulk directory CSVs; each source degrades gracefully."""
+    merged: dict[str, dict] = {}
+    for label, url, parser in (
+        ("yc", YC_CSV_URL, parse_yc_csv),
+        ("aiServices", AI_SERVICES_CSV_URL, parse_ai_services_csv),
+    ):
+        try:
+            resp = await fetcher.get(url, max_attempts=3,
+                                     timeout=__import__("aiohttp").ClientTimeout(total=180))
+            if not resp.ok:
+                log.warning("directory dataset %s failed: HTTP %s", label, resp.status)
+                continue
+            parsed = parser(resp.text)
+            for record in parsed:
+                key = record["entityName"].lower()
+                if key not in merged:
+                    merged[key] = record
+            log.info("directory dataset %s -> %d companies", label, len(parsed))
+        except Exception as exc:  # noqa: BLE001
+            log.warning("directory dataset %s failed (%s)", label, exc)
+    return list(merged.values())
+
+
 async def collect_employee_counts(fetcher: Fetcher, labels: Iterable[str]) -> dict[str, dict]:
     """One batched Wikidata SPARQL query for employee counts (P1128).
 
@@ -367,26 +505,34 @@ async def collect_employee_counts(fetcher: Fetcher, labels: Iterable[str]) -> di
 
 async def collect_startups(fetcher: Fetcher, settings: Settings) -> dict[str, Any]:
     """Run every startup source; merge by normalised name."""
-    wiki = await collect_wikipedia(fetcher)
+    wikipedia_task = asyncio.create_task(collect_wikipedia(fetcher))
+    directories_task = asyncio.create_task(collect_directory_datasets(fetcher))
     github = await collect_github_lists(fetcher, settings)
     listicles = await collect_listicles(fetcher)
+    wiki = await wikipedia_task
+    directories = await directories_task
 
     merged: dict[str, dict] = {}
-    for record in wiki + github + listicles:
+    for record in wiki + directories + github + listicles:
         key = record["entityName"].lower()
         existing = merged.get(key)
         if existing is None:
             merged[key] = record
         else:
-            # keep the richer source URL (prefer direct article/directory page)
+            # keep the richer source URL and richer employee data
             if not existing.get("sourceUrl") and record.get("sourceUrl"):
                 existing["sourceUrl"] = record["sourceUrl"]
+            if existing.get("employeeCount") is None and record.get("employeeCount") is not None:
+                existing["employeeCount"] = record["employeeCount"]
+            if not existing.get("description") and record.get("description"):
+                existing["description"] = record["description"]
 
     snapshot = list(merged.values())
     save_snapshot("startups_raw.json", snapshot)
     save_snapshot("startups_sources_meta.json", {
-        "wikipedia": len(wiki), "githubLists": len(github), "listicles": len(listicles),
-        "merged": len(snapshot),
+        "wikipedia": len(wiki), "directories": len(directories), "githubLists": len(github),
+        "listicles": len(listicles), "merged": len(snapshot),
     })
-    return {"records": snapshot, "counts": {"wikipedia": len(wiki), "github": len(github),
-                                            "listicles": len(listicles), "merged": len(snapshot)}}
+    return {"records": snapshot, "counts": {"wikipedia": len(wiki), "directories": len(directories),
+                                            "github": len(github), "listicles": len(listicles),
+                                            "merged": len(snapshot)}}

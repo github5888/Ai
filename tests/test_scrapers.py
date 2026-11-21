@@ -16,8 +16,10 @@ from src.scrapers.news_scraper import extract_article_text, parse_feed
 from src.scrapers.product_scraper import infer_startup_name, parse_markdown_tools
 from src.scrapers.research_scraper import parse_daily_papers, split_authors
 from src.scrapers.startup_scraper import (
+    parse_ai_services_csv,
     parse_builtin_directory,
     parse_github_markdown_companies,
+    parse_yc_csv,
     parse_wiki_members,
     parse_wikidata_employees,
 )
@@ -258,6 +260,34 @@ def test_extract_article_text_prefers_article_tag():
 
 def test_strip_html_entities():
     assert strip_html("<p>A &amp; B</p>") == "A & B"
+
+
+def test_parse_yc_csv_filters_ai_and_keeps_team_size():
+    csv_text = """id,name,slug,one_liner,long_description,team_size,tags,status
+1,CoolAI,coolai,"An AI copilot for doctors","", 42,"[""Artificial Intelligence"", ""Health""]",Active
+2,WeedBot,weedbot,"Kills weeds with robots","", 10,"[""Robotics"", ""Agriculture""]",Active
+3,LLMBiz,llmbiz,"Machine learning for sales teams","",,"[]",Active
+"""
+    records = parse_yc_csv(csv_text)
+    names = {r["entityName"] for r in records}
+    assert names == {"CoolAI", "LLMBiz"}
+    cool = next(r for r in records if r["entityName"] == "CoolAI")
+    assert cool["employeeCount"] == 42
+    assert cool["sourceUrl"] == "https://www.ycombinator.com/companies/coolai"
+    assert "YC team size: 42" in (cool["description"] or "")
+
+
+def test_parse_ai_services_csv_keeps_ranges_verbatim():
+    csv_text = """Company_Name,Website,Location,Number of Employees
+Smith.ai,https://smith.ai/,Los Altos CA,250 - 999
+DataWorks,https://dataworks.io/,Pune,50 - 249
+"""
+    records = parse_ai_services_csv(csv_text)
+    assert len(records) == 2
+    assert records[0]["entityName"] == "Smith.ai"
+    assert records[0]["employeeCount"] is None          # ranges are never faked into ints
+    assert "Employees: 250 - 999" in records[0]["description"]
+    assert records[0]["sourceUrl"] == "https://smith.ai/"
 
 
 def test_split_authors_handles_dump_formats():

@@ -128,22 +128,26 @@ async def collect_news(fetcher: Fetcher, window_hours: int = 24,
     ]
     log.info("fresh (<=%dh) news articles: %d", window_hours, len(fresh))
 
-    # Full-text fetch for the freshest items (bounded, robots-aware).
+    # Full-text fetch for the freshest items: concurrent, robots-aware, one
+    # attempt per article (slow pages must not stall the whole signal stage).
     fresh.sort(key=lambda r: r.get("publishedAt") or "", reverse=True)
-    full_text_targets = fresh[:max_full_text]
-    for record in full_text_targets:
+    targets = fresh[:max_full_text]
+
+    async def with_full_text(record: dict) -> dict:
         url = record["url"]
         try:
-            if not fetcher.robots_allowed(url):
-                continue
-            resp = await fetcher.get(url, max_attempts=2)
+            if not await asyncio.to_thread(fetcher.robots_allowed, url):
+                return record
+            resp = await fetcher.get(url, max_attempts=1)
             if resp.ok:
                 body = extract_article_text(resp.text)
                 if len(body) > 400:
                     record["content"] = truncate(body, 20000)
         except Exception as exc:  # noqa: BLE001
             log.warning("article full-text failed %s (%s)", url, exc)
-        await asyncio.sleep(0.2)
+        return record
+
+    await asyncio.gather(*[with_full_text(r) for r in targets], return_exceptions=True)
 
     snapshot = fresh
     save_snapshot("news_raw.json", snapshot)
