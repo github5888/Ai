@@ -224,19 +224,25 @@ class Storage:
         return True
 
     def upsert_paper(self, session: Session, **fields) -> bool:
-        url_hash = fields.get("url_hash")
+        """Merge-on-conflict paper insert.  Identity: arxiv_id when known,
+        else the normalised URL hash.  Existing rows gain missing fields
+        (repo link, stars) instead of creating duplicates."""
+        url_hash_value = fields.get("url_hash")
         arxiv_id = fields.get("arxiv_id")
-        if not url_hash:
+        if not url_hash_value:
             return False
-        conditions = [ResearchPaper.url_hash == url_hash]
+        stmt = select(ResearchPaper)
         if arxiv_id:
-            conditions.append(ResearchPaper.arxiv_id == arxiv_id)
-        existing = session.execute(
-            select(ResearchPaper).where(
-                ResearchPaper.url_hash == url_hash if arxiv_id is None else
-                (ResearchPaper.arxiv_id == arxiv_id)
-            )
-        ).scalar_one_or_none()
+            existing = session.execute(
+                stmt.where(
+                    (ResearchPaper.arxiv_id == arxiv_id)
+                    | (ResearchPaper.url_hash == url_hash_value)
+                )
+            ).scalars().first()
+        else:
+            existing = session.execute(
+                stmt.where(ResearchPaper.url_hash == url_hash_value)
+            ).scalars().first()
         if existing:
             changed = False
             if fields.get("github_url") and not existing.github_url:
@@ -245,8 +251,14 @@ class Storage:
             if fields.get("github_stars") is not None:
                 existing.github_stars = fields["github_stars"]
                 changed = True
-            if fields.get("title") and not existing.title:
-                existing.title = fields["title"]
+            if fields.get("published_date") and not existing.published_date:
+                existing.published_date = fields["published_date"]
+                changed = True
+            if fields.get("authors_json") and existing.authors_json in (None, "[]"):
+                existing.authors_json = fields["authors_json"]
+                changed = True
+            if arxiv_id and not existing.arxiv_id:
+                existing.arxiv_id = arxiv_id
                 changed = True
             return changed
         session.add(ResearchPaper(**fields))

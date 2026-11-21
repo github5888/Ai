@@ -38,6 +38,23 @@ SHEET_COLUMNS = {
 }
 
 
+def _dedupe(rows: list[list], key_indices: list[int], quality_index: int | None = None) -> list[list]:
+    """Collapse rows sharing the same identity key (case-insensitive).
+
+    Keeps the "best" row: the one with the most filled cells, so records
+    carrying richer fields (employee counts, stars) win over bare ones."""
+    best: dict[tuple, list] = {}
+    for row in rows[1:]:  # skip header
+        key = tuple(str(row[i] or "").strip().lower() for i in key_indices)
+        if not any(key):
+            continue
+        filled = sum(1 for cell in row if cell not in ("", None))
+        current = best.get(key)
+        if current is None or filled > sum(1 for c in current if c not in ("", None)):
+            best[key] = row
+    return [rows[0]] + [best[k] for k in sorted(best)]
+
+
 def _rows_for(model, columns: list[str], storage) -> list[list]:
     records = storage.load_table(model)
     rows: list[list] = [columns]
@@ -63,29 +80,51 @@ def _rows_for(model, columns: list[str], storage) -> list[list]:
     return rows
 
 
+def _tab_rows(tab: str, storage) -> list[list]:
+    """Rows for one tab, with canonical dedup applied where it matters:
+    startups collapse to unique canonical entities, products to unique
+    (product, startup) pairs, papers to unique canonical URLs."""
+    columns = SHEET_COLUMNS[tab]
+    model_map = {
+        TAB_STARTUPS: Startup,
+        TAB_PRODUCTS: Product,
+        TAB_PAPERS: ResearchPaper,
+        TAB_JOBS: JobPost,
+        TAB_NEWS: NewsArticle,
+        TAB_MAPPING: None,
+    }
+    model = model_map[tab]
+    if model is None:
+        from .database import EntityMapping
+
+        records = storage.load_table(EntityMapping)
+        return [columns] + [[record.get(c, "") or "" for c in columns] for record in records]
+    rows = _rows_for(model, columns, storage)
+    if tab == TAB_STARTUPS:
+        canonical_idx = columns.index("canonicalName")
+        entity_idx = columns.index("entityName")
+        rows = _dedupe(rows, [canonical_idx, entity_idx])
+    elif tab == TAB_PRODUCTS:
+        rows = _dedupe(rows, [columns.index("productName"), columns.index("startupName"),
+                              columns.index("canonicalStartup")])
+    elif tab == TAB_PAPERS:
+        rows = _dedupe(rows, [columns.index("paper_url")])
+    return rows
+
+
 def export_csv(storage, out_dir: Path = OUT_DIR) -> list[Path]:
     """Write the 6 tab CSVs (numbers preserved for Startups/Products/Papers)."""
     out_dir.mkdir(parents=True, exist_ok=True)
     paths: list[Path] = []
-    tab_map = [
-        ("01_startups.csv", TAB_STARTUPS, Startup),
-        ("02_products.csv", TAB_PRODUCTS, Product),
-        ("03_research_papers.csv", TAB_PAPERS, ResearchPaper),
-        ("04_jobs.csv", TAB_JOBS, JobPost),
-        ("05_news.csv", TAB_NEWS, NewsArticle),
-        ("06_entity_mapping_log.csv", TAB_MAPPING, None),
-    ]
-    for filename, tab, model in tab_map:
-        columns = SHEET_COLUMNS[tab]
-        if model is None:
-            from .database import EntityMapping
-
-            records = storage.load_table(EntityMapping)
-            rows = [columns]
-            for record in records:
-                rows.append([record.get(c, "") or "" for c in columns])
-        else:
-            rows = _rows_for(model, columns, storage)
+    for filename, tab in [
+        ("01_startups.csv", TAB_STARTUPS),
+        ("02_products.csv", TAB_PRODUCTS),
+        ("03_research_papers.csv", TAB_PAPERS),
+        ("04_jobs.csv", TAB_JOBS),
+        ("05_news.csv", TAB_NEWS),
+        ("06_entity_mapping_log.csv", TAB_MAPPING),
+    ]:
+        rows = _tab_rows(tab, storage)
         path = out_dir / filename
         with path.open("w", encoding="utf-8", newline="") as fh:
             writer = csv.writer(fh)
@@ -110,23 +149,9 @@ def export_xlsx(storage, out_path: Path | None = None) -> Path:
     header_fill = PatternFill("solid", fgColor="1F3864")
     header_font = Font(color="FFFFFF", bold=True)
 
-    tab_map = [
-        (TAB_STARTUPS, Startup),
-        (TAB_PRODUCTS, Product),
-        (TAB_PAPERS, ResearchPaper),
-        (TAB_JOBS, JobPost),
-        (TAB_NEWS, NewsArticle),
-        (TAB_MAPPING, None),
-    ]
-    for tab, model in tab_map:
+    for tab in (TAB_STARTUPS, TAB_PRODUCTS, TAB_PAPERS, TAB_JOBS, TAB_NEWS, TAB_MAPPING):
         columns = SHEET_COLUMNS[tab]
-        if model is None:
-            from .database import EntityMapping
-
-            records = storage.load_table(EntityMapping)
-            rows = [columns] + [[record.get(c, "") or "" for c in columns] for record in records]
-        else:
-            rows = _rows_for(model, columns, storage)
+        rows = _tab_rows(tab, storage)
         sheet = workbook.create_sheet(tab)
         for row in rows:
             sheet.append(row)
@@ -164,23 +189,9 @@ def upload_sheets(storage, credentials_file: str, spreadsheet_id: str) -> bool:
     document = client.open_by_key(spreadsheet_id)
 
     existing = {ws.title for ws in document.worksheets()}
-    tab_map = [
-        (TAB_STARTUPS, Startup),
-        (TAB_PRODUCTS, Product),
-        (TAB_PAPERS, ResearchPaper),
-        (TAB_JOBS, JobPost),
-        (TAB_NEWS, NewsArticle),
-        (TAB_MAPPING, None),
-    ]
-    for tab, model in tab_map:
+    for tab in (TAB_STARTUPS, TAB_PRODUCTS, TAB_PAPERS, TAB_JOBS, TAB_NEWS, TAB_MAPPING):
         columns = SHEET_COLUMNS[tab]
-        if model is None:
-            from .database import EntityMapping
-
-            records = storage.load_table(EntityMapping)
-            rows = [columns] + [[record.get(c, "") or "" for c in columns] for record in records]
-        else:
-            rows = _rows_for(model, columns, storage)
+        rows = _tab_rows(tab, storage)
         if tab in existing:
             worksheet = document.worksheet(tab)
             worksheet.clear()

@@ -61,6 +61,10 @@ jobs:
           git config user.name "graphone-crawler"
           git config user.email "crawler@users.noreply.github.com"
           git add data/raw
-          git diff --cached --quiet && echo "No new data" || \
+          if git diff --cached --quiet; then
+            echo "No new data"
+          else
             git commit -m "crawl: refresh raw snapshots ($(date -u +%Y-%m-%dT%H:%MZ)) [skip ci]"
-          git push
+            git pull --rebase origin "$GITHUB_REF_NAME"
+            git push
+          fi

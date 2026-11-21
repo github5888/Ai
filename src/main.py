@@ -133,12 +133,15 @@ def _product_envelopes(records: list[dict]) -> list[dict]:
 
 
 def _paper_envelopes(records: list[dict]) -> list[dict]:
+    import re as _re
+
     envelopes = []
     for record in records:
+        paper_url = _re.sub(r"(arxiv\.org/abs/[\w.\-]+)v\d+$", r"\1", record.get("paper_url", "") or "")
         content = {
             "title": record.get("title", ""),
             "authors": record.get("authors", []),
-            "paper_url": record.get("paper_url", ""),
+            "paper_url": paper_url,
             "github_url": record.get("githubUrl"),
             "github_stars": record.get("githubStars"),
             "published_date": record.get("publishedDate"),
@@ -250,12 +253,16 @@ def cmd_ingest(args) -> int:
                         product_name=content["productName"], startup_name=content.get("startupName"),
                         pricing_model=content.get("pricingModel"), **common)
                 elif kind == "papers":
+                    import re as _re
+
+                    arxiv_match = _re.search(r"arxiv\.org/(?:abs|pdf)/([\w.\-]+)", content["paper_url"])
+                    arxiv_id = _re.sub(r"v\d+$", "", arxiv_match.group(1)) if arxiv_match else None
                     ok = storage.upsert_paper(session,
                         title=content["title"][:500],
                         authors_json=json.dumps(content.get("authors", []), ensure_ascii=False),
                         paper_url=content["paper_url"],
                         url_hash=url_hash(content["paper_url"]),
-                        arxiv_id=None,  # backfilled after ingest from paper_url
+                        arxiv_id=arxiv_id,
                         github_url=content.get("github_url"),
                         github_stars=content.get("github_stars"),
                         published_date=content.get("published_date"), **common)

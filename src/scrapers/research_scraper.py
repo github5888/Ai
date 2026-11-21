@@ -52,19 +52,20 @@ def parse_arxiv_atom(xml_text: str) -> list[dict]:
     for entry in feed.entries:
         arxiv_id = (entry.get("id") or "").rsplit("/", 1)[-1]
         arxiv_id = re.sub(r"v\d+$", "", arxiv_id)
+        canonical_url = f"https://arxiv.org/abs/{arxiv_id}" if arxiv_id else (entry.get("link") or "")
         authors = [norm_space(a.get("name", "")) for a in entry.get("authors", []) if a.get("name")]
         published_iso, _ = parse_timestamp(entry.get("published") or entry.get("updated"))
         records.append(
             {
                 "title": norm_space(entry.get("title", "")),
                 "authors": authors,
-                "paper_url": entry.get("link") or f"https://arxiv.org/abs/{arxiv_id}",
+                "paper_url": canonical_url,
                 "arxivId": arxiv_id,
                 "githubUrl": None,
                 "githubStars": None,
                 "publishedDate": published_iso,
                 "sourceName": "Arxiv",
-                "sourceUrl": entry.get("link") or f"https://arxiv.org/abs/{arxiv_id}",
+                "sourceUrl": canonical_url,
             }
         )
     return records
@@ -96,11 +97,10 @@ def split_authors(raw: Any) -> list[str]:
 
 
 def parse_pwc_frames(papers_df, links_df, limit: int = 2500) -> list[dict]:
-    """Select papers from PwC pandas frames: newest first, official repo joined.
+    """Select papers from PwC pandas frames.
 
-    papers_df columns (upstream dump): id, arxiv_id, title, abstract, url_abs,
-    url_pdf, published, authors, ...   links_df: paper_id, repo_url,
-    is_official, ...
+    Strategy: papers WITH a code repository are preferred (they carry GitHub
+    metrics), newest first; remaining slots go to the newest papers overall.
     """
     papers = papers_df.copy()
     papers["published"] = papers["published"].astype(str)
@@ -119,9 +119,7 @@ def parse_pwc_frames(papers_df, links_df, limit: int = 2500) -> list[dict]:
             seen.add(key)
             repo_by_paper[key] = repo_url
 
-    papers = papers.sort_values("published", ascending=False).head(limit)
-    records: list[dict] = []
-    for row in papers.itertuples(index=False):
+    def to_record(row) -> dict | None:
         arxiv_id = str(getattr(row, "arxiv_id", "") or "")
         paper_url = str(getattr(row, "url_abs", "") or "")
         if paper_url and paper_url.startswith("http"):
@@ -129,22 +127,35 @@ def parse_pwc_frames(papers_df, links_df, limit: int = 2500) -> list[dict]:
         elif arxiv_id:
             abs_url = f"https://arxiv.org/abs/{arxiv_id}"
         else:
-            continue
+            return None
         github_url = repo_by_paper.get(getattr(row, "id", None))
         published_iso, _ = parse_timestamp(getattr(row, "published", None))
-        records.append(
-            {
-                "title": norm_space(str(getattr(row, "title", ""))),
-                "authors": split_authors(getattr(row, "authors", None)),
-                "paper_url": abs_url,
-                "arxivId": arxiv_id or None,
-                "githubUrl": github_url,
-                "githubStars": None,
-                "publishedDate": published_iso,
-                "sourceName": "Papers with Code",
-                "sourceUrl": abs_url,
-            }
-        )
+        return {
+            "title": norm_space(str(getattr(row, "title", ""))),
+            "authors": split_authors(getattr(row, "authors", None)),
+            "paper_url": abs_url,
+            "arxivId": arxiv_id or None,
+            "githubUrl": github_url,
+            "githubStars": None,
+            "publishedDate": published_iso,
+            "sourceName": "Papers with Code",
+            "sourceUrl": abs_url,
+        }
+
+    papers_sorted = papers.sort_values("published", ascending=False)
+    with_repo = papers_sorted[papers_sorted["id"].isin(repo_by_paper.keys())].head(limit)
+    selected_ids = set(with_repo["id"])
+    without_repo = papers_sorted[~papers_sorted["id"].isin(selected_ids)].head(max(0, limit // 3))
+
+    records: list[dict] = []
+    for row in with_repo.itertuples(index=False):
+        record = to_record(row)
+        if record:
+            records.append(record)
+    for row in without_repo.itertuples(index=False):
+        record = to_record(row)
+        if record:
+            records.append(record)
     return records
 
 
