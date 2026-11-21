@@ -2,9 +2,9 @@
  "jobs": {
   "counts": {
    "perSource": {
+    "RemoteOK": 100,
     "Remotive": 16,
     "Arbeitnow": 300,
-    "RemoteOK": 99,
     "We Work Remotely": 25,
     "Hacker News (Who is hiring?)": 60
    },
@@ -24,23 +24,6 @@
   "error": null,
   "recordCount": 5749
  },
- "news": {
-  "counts": {
-   "perSource": {
-    "TechCrunch AI": 20,
-    "The Verge AI": 0,
-    "VentureBeat AI": 0,
-    "Ars Technica AI": 20,
-    "Wired AI": 10,
-    "MIT Technology Review AI": 10,
-    "Marktechpost AI": 10,
-    "Hacker News (AI)": 0
-   },
-   "fresh": 16
-  },
-  "error": null,
-  "recordCount": 16
- },
  "papers": {
   "counts": {
    "arxiv": 1200,
@@ -51,6 +34,13 @@
   },
   "error": null,
   "recordCount": 2519
+ },
+ "news": {
+  "counts": {
+   "error": "timeout after 420s"
+  },
+  "error": null,
+  "recordCount": 0
  },
  "products": {
   "counts": {

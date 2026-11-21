@@ -564,8 +564,9 @@
   "productName": "Limitless",
   "sourceName": "GitHub:awesome-generative-ai",
   "sourceUrl": "https://www.limitless.ai/",
-  "pricingModel": null,
-  "startupName": "Limitless"
+  "pricingModel": "FREEMIUM",
+  "startupName": "Limitless",
+  "pricingEvidence": "vendor homepage (see sourceUrl)"
  },
  {
   "productName": "NotebookLM",
@@ -682,7 +683,7 @@
   "productName": "alphaXiv",
   "sourceName": "GitHub:awesome-generative-ai",
   "sourceUrl": "https://www.alphaxiv.org",
-  "pricingModel": "PAID",
+  "pricingModel": "FREEMIUM",
   "startupName": "alphaXiv",
   "pricingEvidence": "vendor homepage (see sourceUrl)"
  },
@@ -1818,9 +1819,8 @@
   "productName": "AI Dungeon",
   "sourceName": "GitHub:awesome-generative-ai",
   "sourceUrl": "https://aidungeon.io/",
-  "pricingModel": "FREEMIUM",
-  "startupName": "AI Dungeon",
-  "pricingEvidence": "vendor homepage (see sourceUrl)"
+  "pricingModel": null,
+  "startupName": "AI Dungeon"
  },
  {
   "productName": "Clickable",
@@ -1894,8 +1894,9 @@
   "productName": "ChatGPT prompt engineering for developers",
   "sourceName": "GitHub:awesome-generative-ai",
   "sourceUrl": "https://www.deeplearning.ai/short-courses/chatgpt-prompt-engineering-for-developers/",
-  "pricingModel": null,
-  "startupName": null
+  "pricingModel": "FREEMIUM",
+  "startupName": null,
+  "pricingEvidence": "vendor homepage (see sourceUrl)"
  },
  {
   "productName": "PromptPerfect",
@@ -6234,8 +6235,9 @@
   "productName": "Synthetic Creativity - by Cavin - Deep Markets",
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://deepmarkets.substack.com/p/synthetic-creativity",
-  "pricingModel": null,
-  "startupName": "Synth"
+  "pricingModel": "FREE",
+  "startupName": "Synth",
+  "pricingEvidence": "vendor homepage (see sourceUrl)"
  },
  {
   "productName": "Can Computers Create Art? by Aaron Hertzmann",
@@ -6285,8 +6287,9 @@
   "productName": "When Will the GenAI Bubble Burst? - by Gary Marcus",
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://garymarcus.substack.com/p/when-will-the-genai-bubble-burst",
-  "pricingModel": null,
-  "startupName": null
+  "pricingModel": "FREEMIUM",
+  "startupName": null,
+  "pricingEvidence": "vendor homepage (see sourceUrl)"
  },
  {
   "productName": "AI in Education Group Meeting Notes - Google Docs",
@@ -6498,9 +6501,8 @@
   "productName": "HD Robots",
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://hdrobots.com/",
-  "pricingModel": "FREEMIUM",
-  "startupName": "HD Robots",
-  "pricingEvidence": "vendor homepage (see sourceUrl)"
+  "pricingModel": null,
+  "startupName": "HD Robots"
  },
  {
   "productName": "AIForme",
@@ -7425,8 +7427,9 @@
   "productName": "Prompt engineering - OpenAI API",
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://platform.openai.com/docs/guides/prompt-engineering",
-  "pricingModel": null,
-  "startupName": "OpenAI"
+  "pricingModel": "PAID",
+  "startupName": "OpenAI",
+  "pricingEvidence": "vendor homepage (see sourceUrl)"
  },
  {
   "productName": "ChatGPT for designers",
@@ -8527,9 +8530,8 @@
   "productName": "InteriorAIDesigns",
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://interioraidesigns.com/",
-  "pricingModel": "FREEMIUM",
-  "startupName": "InteriorAIDesigns",
-  "pricingEvidence": "vendor homepage (see sourceUrl)"
+  "pricingModel": null,
+  "startupName": "InteriorAIDesigns"
  },
  {
   "productName": "Playground AI",
@@ -8587,9 +8589,8 @@
   "productName": "PhotoAIStudio",
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://photoaistudio.com/",
-  "pricingModel": "FREEMIUM",
-  "startupName": "PhotoAIStudio",
-  "pricingEvidence": "vendor homepage (see sourceUrl)"
+  "pricingModel": null,
+  "startupName": "PhotoAIStudio"
  },
  {
   "productName": "Baseten",
