@@ -1,4 +1,18 @@
 {
+ "jobs": {
+  "counts": {
+   "perSource": {
+    "Remotive": 16,
+    "Arbeitnow": 300,
+    "RemoteOK": 99,
+    "We Work Remotely": 25,
+    "Hacker News (Who is hiring?)": 60
+   },
+   "fresh": 126
+  },
+  "error": null,
+  "recordCount": 126
+ },
  "startups": {
   "counts": {
    "wikipedia": 168,
@@ -9,20 +23,6 @@
   },
   "error": null,
   "recordCount": 5749
- },
- "jobs": {
-  "counts": {
-   "perSource": {
-    "RemoteOK": 99,
-    "Remotive": 16,
-    "Arbeitnow": 300,
-    "Hacker News (Who is hiring?)": 60,
-    "We Work Remotely": 25
-   },
-   "fresh": 126
-  },
-  "error": null,
-  "recordCount": 126
  },
  "news": {
   "counts": {

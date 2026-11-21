@@ -3,8 +3,9 @@
   "productName": "How Large Language Models Will Transform Science, Society, and AI",
   "sourceName": "GitHub:awesome-generative-ai",
   "sourceUrl": "https://hai.stanford.edu/news/how-large-language-models-will-transform-science-society-and-ai",
-  "pricingModel": null,
-  "startupName": null
+  "pricingModel": "PAID",
+  "startupName": null,
+  "pricingEvidence": "vendor homepage (see sourceUrl)"
  },
  {
   "productName": "Generative AI: A Creative New World",
@@ -563,9 +564,8 @@
   "productName": "Limitless",
   "sourceName": "GitHub:awesome-generative-ai",
   "sourceUrl": "https://www.limitless.ai/",
-  "pricingModel": "FREEMIUM",
-  "startupName": "Limitless",
-  "pricingEvidence": "vendor homepage (see sourceUrl)"
+  "pricingModel": null,
+  "startupName": "Limitless"
  },
  {
   "productName": "NotebookLM",
@@ -10611,8 +10611,9 @@
   "productName": "Sonix AI",
   "sourceName": "GitHub:awesome-ai-tools",
   "sourceUrl": "https://aitools.inc/tools/sonix-ai",
-  "pricingModel": null,
-  "startupName": null
+  "pricingModel": "FREEMIUM",
+  "startupName": null,
+  "pricingEvidence": "vendor homepage (see sourceUrl)"
  },
  {
   "productName": "Turboscribe",
