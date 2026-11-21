@@ -65,6 +65,6 @@ jobs:
             echo "No new data"
           else
             git commit -m "crawl: refresh raw snapshots ($(date -u +%Y-%m-%dT%H:%MZ)) [skip ci]"
-            git pull --rebase origin "$GITHUB_REF_NAME"
-            git push
+            git pull --rebase --autostash origin "$GITHUB_REF_NAME"
+            git push origin HEAD:"$GITHUB_REF_NAME"
           fi
