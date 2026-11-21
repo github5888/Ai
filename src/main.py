@@ -29,6 +29,7 @@ from .config import LOGS_DIR, Settings, ensure_dirs
 from .llm.orchestrator import ExtractionOrchestrator
 from .llm.schemas import build_envelope
 from .scrapers.base import load_snapshot
+from .storage.database import EntityMapping
 from .storage.database import Storage
 from .utils.hashing import content_hash, url_hash
 from .utils.text import normalize_url
@@ -411,6 +412,8 @@ def cmd_resolve(args) -> int:
     write_out_jsonl("entity_mapping_log.jsonl", log_dicts)
     save_snapshot("entity_resolution_stats.json", resolver.stats())
     with _Session(storage.engine) as session:
+        # resolve is idempotent: a re-run replaces the previous mapping log
+        session.query(EntityMapping).delete()
         added = storage.add_entity_mappings(session, log_dicts)
         session.commit()
     logger.info("ENTITY RESOLUTION: %s (%d mapping rows persisted)", resolver.stats(), added)
