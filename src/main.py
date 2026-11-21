@@ -67,23 +67,26 @@ async def _run_collect_raw(settings: Settings, args) -> dict[str, Any]:
     fetcher = Fetcher(settings)
     summary: dict[str, Any] = {}
     try:
-        async def safe(label: str, coro):
+        async def safe(label: str, seconds: int, coro_factory):
             try:
-                summary[label] = await coro
+                summary[label] = await asyncio.wait_for(coro_factory(), timeout=seconds)
+            except asyncio.TimeoutError:
+                logger.error("collect stage %s TIMED OUT after %ss (partial run continues)", label, seconds)
+                summary[label] = {"records": [], "counts": {"error": f"timeout after {seconds}s"}}
             except Exception as exc:  # noqa: BLE001
                 logger.exception("collect stage failed: %s", label)
                 summary[label] = {"error": str(exc), "records": []}
 
         await asyncio.gather(
-            safe("startups", collect_startups(fetcher, settings)),
-            safe("papers", collect_papers(fetcher, settings,
-                                          arxiv_limit=args.arxiv_limit, pwc_limit=args.pwc_limit)),
-            safe("news", collect_news(fetcher, settings.freshness_hours)),
-            safe("jobs", collect_jobs(fetcher, settings.freshness_hours)),
+            safe("startups", 600, lambda: collect_startups(fetcher, settings)),
+            safe("papers", 900, lambda: collect_papers(
+                fetcher, settings, arxiv_limit=args.arxiv_limit, pwc_limit=args.pwc_limit)),
+            safe("news", 420, lambda: collect_news(fetcher, settings.freshness_hours)),
+            safe("jobs", 420, lambda: collect_jobs(fetcher, settings.freshness_hours)),
         )
         # products need the startup universe for company inference
         startup_names = [r["entityName"] for r in summary.get("startups", {}).get("records", [])]
-        await safe("products", collect_products(fetcher, settings, known_startups=startup_names))
+        await safe("products", 300, lambda: collect_products(fetcher, settings, known_startups=startup_names))
     finally:
         await fetcher.close()
         logger.info("fetcher stats: %s", fetcher.stats)

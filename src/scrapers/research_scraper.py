@@ -18,6 +18,7 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
+import os
 import re
 import urllib.parse
 from pathlib import Path
@@ -319,17 +320,26 @@ async def collect_pwc_dump(fetcher: Fetcher, limit: int = 2500,
 
 
 async def collect_papers(fetcher: Fetcher, settings: Settings,
-                         arxiv_limit: int = 1200, pwc_limit: int = 2500) -> dict:
+                         arxiv_limit: int = 1200, pwc_limit: int = 2500,
+                         hf_days: int = 45) -> dict:
     arxiv_records: list[dict] = []
+    hf_records: list[dict] = []
     pwc_records: list[dict] = []
     errors: list[str] = []
     for label, collector in (
         ("arxiv", lambda: collect_arxiv(fetcher, arxiv_limit)),
-        ("papersWithCode", lambda: collect_pwc_dump(fetcher, pwc_limit)),
+        ("hfDailyPapers", lambda: collect_hf_papers(fetcher, hf_days)),
+        ("papersWithCodeDump", lambda: collect_pwc_dump(fetcher, pwc_limit)),
     ):
+        # the 600MB PwC dump only runs when explicitly enabled (PWC_DUMP_ENABLED=1);
+        # the fast path (Arxiv + HF/PwC daily API) already clears the 1,000 target.
+        if label == "papersWithCodeDump" and os.environ.get("PWC_DUMP_ENABLED", "").lower() not in ("1", "true", "yes"):
+            continue
         try:
             if label == "arxiv":
                 arxiv_records = await collector()
+            elif label == "hfDailyPapers":
+                hf_records = await collector()
             else:
                 pwc_records = await collector()
         except Exception as exc:  # noqa: BLE001
@@ -337,22 +347,91 @@ async def collect_papers(fetcher: Fetcher, settings: Settings,
             log.exception("paper source failed: %s", label)
 
     merged: dict[str, dict] = {}
-    for record in pwc_records + arxiv_records:  # arxiv (fresher) wins on clash
+    for record in hf_records + pwc_records + arxiv_records:  # arxiv (fresher) wins on clash
         key = (record.get("arxivId") or record["paper_url"]).lower()
         existing = merged.get(key)
         if existing is None:
             merged[key] = record
         else:
-            if existing.get("githubUrl") and not record.get("githubUrl"):
-                record["githubUrl"] = existing["githubUrl"]
+            for field in ("githubUrl", "githubStars"):
+                if existing.get(field) and not record.get(field):
+                    record[field] = existing[field]
+            if existing.get("authors") and not record.get("authors"):
+                record["authors"] = existing["authors"]
             merged[key] = record
 
     snapshot = list(merged.values())
     save_snapshot("papers_raw.jsonl", snapshot)
     save_snapshot("papers_sources_meta.json", {
-        "arxiv": len(arxiv_records), "papersWithCode": len(pwc_records),
+        "arxiv": len(arxiv_records), "hfDailyPapers": len(hf_records),
+        "papersWithCodeDump": len(pwc_records),
         "merged": len(snapshot), "errors": errors,
     })
     return {"records": snapshot, "counts": {"arxiv": len(arxiv_records),
-                                            "papersWithCode": len(pwc_records),
+                                            "hfDailyPapers": len(hf_records),
+                                            "papersWithCodeDump": len(pwc_records),
                                             "merged": len(snapshot), "errors": errors}}
+
+
+def parse_daily_papers(payload: list, source_name: str = "Papers with Code (Hugging Face)") -> list[dict]:
+    """Parse the Hugging Face daily-papers payload (the paperswithcode.co backend).
+
+    Each item carries paper.id (arXiv id), title, authors, publishedAt and
+    often a githubRepo + githubStars from the community code tracker."""
+    records: list[dict] = []
+    for item in payload if isinstance(payload, list) else []:
+        paper = item.get("paper", {}) or {}
+        arxiv_id = str(paper.get("id") or "").strip()
+        title = norm_space(str(paper.get("title") or ""))
+        if not arxiv_id or not title:
+            continue
+        authors = [norm_space(a.get("name", "")) for a in paper.get("authors", []) if a.get("name")]
+        github_url = paper.get("githubRepo") or None
+        github_stars = paper.get("githubStars")
+        github_stars = int(github_stars) if isinstance(github_stars, (int, str)) and str(github_stars).isdigit() else None
+        published_iso, _ = parse_timestamp(paper.get("publishedAt") or paper.get("submittedOnDailyAt"))
+        canonical_url = f"https://arxiv.org/abs/{arxiv_id}"
+        records.append({
+            "title": title,
+            "authors": authors,
+            "paper_url": canonical_url,
+            "arxivId": arxiv_id,
+            "githubUrl": github_url,
+            "githubStars": github_stars,
+            "publishedDate": published_iso,
+            "sourceName": source_name,
+            "sourceUrl": canonical_url,
+        })
+    return records
+
+
+async def collect_hf_papers(fetcher: Fetcher, days: int = 45) -> list[dict]:
+    """Walk the daily-papers API backwards through ``days`` calendar days.
+
+    ~40-80 curated AI papers per weekday; six weeks comfortably clears the
+    1,000-paper target. Each request is small and politely paced."""
+    from datetime import timedelta
+
+    from ..utils.dates import now_utc
+
+    all_records: dict[str, dict] = {}
+    empty_days = 0
+    for offset in range(days):
+        date = (now_utc() - timedelta(days=offset)).strftime("%Y-%m-%d")
+        url = f"https://huggingface.co/api/daily_papers?date={date}"
+        try:
+            payload = await fetcher.get_json(url)
+        except Exception as exc:  # noqa: BLE001
+            log.warning("daily papers %s failed: %s", date, exc)
+            continue
+        parsed = parse_daily_papers(payload)
+        for record in parsed:
+            all_records.setdefault(record["arxivId"], record)
+        if not parsed:
+            empty_days += 1
+        if offset % 7 == 0:
+            log.info("daily papers: day -%d -> %d cumulative", offset, len(all_records))
+        if len(all_records) >= 2600:
+            break
+    log.info("hugging-face daily papers -> %d papers (%d empty days)", len(all_records), empty_days)
+    return list(all_records.values())

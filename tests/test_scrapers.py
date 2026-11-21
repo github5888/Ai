@@ -14,6 +14,7 @@ from src.scrapers.jobs_scraper import (
 )
 from src.scrapers.news_scraper import extract_article_text, parse_feed
 from src.scrapers.product_scraper import infer_startup_name, parse_markdown_tools
+from src.scrapers.research_scraper import parse_daily_papers, split_authors
 from src.scrapers.startup_scraper import (
     parse_builtin_directory,
     parse_github_markdown_companies,
@@ -257,6 +258,32 @@ def test_extract_article_text_prefers_article_tag():
 
 def test_strip_html_entities():
     assert strip_html("<p>A &amp; B</p>") == "A & B"
+
+
+def test_split_authors_handles_dump_formats():
+    assert split_authors('["A. Author", "B. Author"]') == ["A. Author", "B. Author"]
+    assert split_authors("Name One; Name Two") == ["Name One", "Name Two"]
+    assert split_authors(None) == []
+
+
+def test_parse_daily_papers_extracts_github_fields():
+    payload = [{
+        "paper": {
+            "id": "2611.24738",
+            "title": " Jeveration: System One Models ",
+            "authors": [{"name": "Yuhe Liu"}, {"name": "Xinchao Wang"}, {"name": ""}],
+            "publishedAt": "2026-11-18T00:00:00.000Z",
+            "githubRepo": "https://github.com/Carol-lyh/Jeveration",
+            "githubStars": 72,
+        },
+    }, {"paper": {}}, {}]
+    records = parse_daily_papers(payload)
+    assert len(records) == 1
+    assert records[0]["arxivId"] == "2611.24738"
+    assert records[0]["authors"] == ["Yuhe Liu", "Xinchao Wang"]
+    assert records[0]["githubUrl"] == "https://github.com/Carol-lyh/Jeveration"
+    assert records[0]["githubStars"] == 72
+    assert records[0]["paper_url"] == "https://arxiv.org/abs/2611.24738"
 
 
 def test_json_roundtrip_for_raw_records():
