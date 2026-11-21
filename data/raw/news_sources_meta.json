@@ -1,0 +1,14 @@
+{
+ "perSource": {
+  "TechCrunch AI": 20,
+  "The Verge AI": 0,
+  "VentureBeat AI": 0,
+  "Ars Technica AI": 20,
+  "Wired AI": 10,
+  "MIT Technology Review AI": 10,
+  "Marktechpost AI": 10,
+  "Hacker News (AI)": 20
+ },
+ "candidates": 90,
+ "fresh": 37
+}
