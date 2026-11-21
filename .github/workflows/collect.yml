@@ -17,6 +17,9 @@ on:
       pwc_limit:
         description: "Max Papers-with-Code papers selected"
         default: "2500"
+  push:
+    branches: ["arena/**", "main"]
+    paths-ignore: ["data/**", "README.md", "architecture.pdf", "docs/**"]
   schedule:
     - cron: "0 3 * * 1"  # weekly refresh (news/jobs stay 24h-fresh via dispatch)
 
