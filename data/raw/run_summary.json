@@ -1,0 +1,57 @@
+{
+ "jobs": {
+  "counts": {
+   "perSource": {
+    "Remotive": 16,
+    "Arbeitnow": 300,
+    "RemoteOK": 98,
+    "We Work Remotely": 25,
+    "Hacker News (Who is hiring?)": 60
+   },
+   "fresh": 107
+  },
+  "error": null,
+  "recordCount": 107
+ },
+ "startups": {
+  "counts": {
+   "wikipedia": 168,
+   "github": 205,
+   "listicles": 0,
+   "merged": 371
+  },
+  "error": null,
+  "recordCount": 371
+ },
+ "papers": {
+  "counts": {
+   "arxiv": 1200,
+   "hfDailyPapers": 1368,
+   "papersWithCodeDump": 0,
+   "merged": 2519,
+   "errors": []
+  },
+  "error": null,
+  "recordCount": 2519
+ },
+ "news": {
+  "counts": {
+   "error": "timeout after 420s"
+  },
+  "error": null,
+  "recordCount": 0
+ },
+ "products": {
+  "counts": {
+   "perSource": {
+    "steven2358/awesome-generative-ai": 276,
+    "ai-collection/ai-collection": 0,
+    "filipecalegario/awesome-generative-ai": 638,
+    "AI-Tools-Inc/awesome-ai-tools": 172
+   },
+   "merged": 1066
+  },
+  "error": null,
+  "recordCount": 1066
+ }
+}
