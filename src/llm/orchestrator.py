@@ -286,11 +286,10 @@ _EMPLOYEES_RE = re.compile(
 )
 _PRICING_RULES = [
     (re.compile(r"\benterprise[- ](grade|plan|only|ready)\b|\bfor enterprise\b", re.I), "ENTERPRISE"),
-    (re.compile(r"\bfreemium\b", re.I), "FREEMIUM"),
-    (re.compile(r"\bfree trial\b", re.I), "FREEMIUM"),
-    (re.compile(r"\bopen[- ]?source\b", re.I), "FREE"),
-    (re.compile(r"\bfree (?:to use|plan|tier|version)\b", re.I), "FREE"),
-    (re.compile(r"\bpaid\b|\bsubscription\b|\bpricing starts|\$\d", re.I), "PAID"),
+    (re.compile(r"\bfreemium\b|\bfree trial\b", re.I), "FREEMIUM"),
+    (re.compile(r"\bfree\b[^.\n]{0,40}\b(paid|premium|pro plan)s?\b|\b(paid|premium)\b[^.\n]{0,40}\bfree\b", re.I), "FREEMIUM"),
+    (re.compile(r"\bpaid\b|\bsubscription\b|\bpricing starts\b|\$\d|\bper month\b|\bper user\b|\b/\s?month\b", re.I), "PAID"),
+    (re.compile(r"\bopen[- ]?source\b|\bfree\b|\bno cost\b|\bfree to try\b", re.I), "FREE"),
 ]
 
 

@@ -53,15 +53,23 @@ LLM extraction, faster GitHub rates, and live Google Sheets upload.
 ## 2. What each phase does (assignment mapping)
 
 ### Phase I — Massive one-time data acquisition (`src/scrapers/`)
-* **Startups** (`startup_scraper.py`): Wikipedia's AI-company category tree (MediaWiki API, 22 categories),
-  curated GitHub lists (`applied-ml`, `awesome-european-ai`, ...), builtin.com directory,
-  and **Wikidata SPARQL** (P1128) for employee counts. Every record cites its own source URL.
-* **Products** (`product_scraper.py`): curated AI-tool lists on GitHub (`awesome-generative-ai`, `ai-collection`, ...).
-  `pricingModel` is classified **only from the source's own words** (`FREE / FREEMIUM / PAID / ENTERPRISE`, else null);
+* **Startups** (`startup_scraper.py`): the **Y Combinator directory export** (community-maintained
+  mirror of the official ycombinator.com/companies directory — ~1.5k AI-tagged startups with team
+  sizes), an **AI-companies directory CSV**, Wikipedia's AI-company category tree (MediaWiki API),
+  curated GitHub lists, builtin.com directory, and **Wikidata SPARQL** (P1128) for employee counts.
+  Employee numbers are copied verbatim from the dataset (real counts kept as ints, bands like
+  "50 - 249" never faked into integers). Every record cites its own source URL.
+* **Products** (`product_scraper.py`): curated AI-tool lists on GitHub (`awesome-generative-ai`,
+  `ai-collection`, ...). `pricingModel` is classified **only from the source's own words**
+  (`FREE / FREEMIUM / PAID / ENTERPRISE`, else null); when a tagline carries no pricing signal, one
+  compliant request to the **vendor's homepage** (`probe-pricing` stage, robots.txt aware) supplies
+  evidence from the vendor's own page — otherwise pricing stays null, never guessed.
   `startupName` is assigned only when the product domain or description explicitly names a known company.
-* **Research papers** (`research_scraper.py`): **Arxiv Atom API** (cs.AI/cs.CL/cs.LG, newest first) plus the
-  **Papers with Code open-data dump** (576k papers, CC-BY-SA, with paper↔code links). Stars are **fetched live**
-  via GitHub GraphQL at run time — never hard-coded, because they are dynamic metrics.
+* **Research papers** (`research_scraper.py`): **Hugging Face daily-papers API** (curated, ~40–80
+  papers/weekday, with `githubRepo`/`githubStars`), the **Arxiv Atom API** (cs.AI/cs.CL/cs.LG,
+  newest first) plus the **Papers with Code open-data dump** (576k papers, CC-BY-SA, optional
+  `PWC_DUMP_ENABLED=1`). Stars are **fetched live** via GitHub GraphQL at run time — never
+  hard-coded, because they are dynamic metrics.
 * Designed for lakhs of records: cursors + snapshots + idempotent upserts (see `architecture.pdf` §3).
 
 ### Phase II — High-fidelity signal ingestion (`news_scraper.py`, `jobs_scraper.py`)

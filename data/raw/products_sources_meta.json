@@ -1,9 +1,15 @@
 {
  "perSource": {
-  "steven2358/awesome-generative-ai": 276,
-  "ai-collection/ai-collection": 0,
-  "filipecalegario/awesome-generative-ai": 638,
+  "steven2358/awesome-generative-ai": 269,
+  "ai-collection/ai-collection": 561,
+  "filipecalegario/awesome-generative-ai": 491,
   "AI-Tools-Inc/awesome-ai-tools": 172
  },
- "merged": 1066
+ "merged": 1474,
+ "pricingProbe": {
+  "FREE": 0,
+  "FREEMIUM": 0,
+  "PAID": 0,
+  "ENTERPRISE": 0
+ }
 }

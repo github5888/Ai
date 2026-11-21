@@ -9,11 +9,15 @@
 Tab layout (exactly as the assignment specifies):
     01 Startups | 02 Products | 03 Research Papers | 04 Jobs | 05 News |
     06 Entity Mapping Log
+
+Each tab is declared as ``(pretty header, model field)`` pairs; canonical
+deduplication collapses multi-source rows to one row per canonical entity.
 """
 from __future__ import annotations
 
 import csv
 import logging
+from datetime import datetime
 from pathlib import Path
 
 from ..config import OUT_DIR
@@ -28,23 +32,95 @@ TAB_JOBS = "04 Jobs"
 TAB_NEWS = "05 News"
 TAB_MAPPING = "06 Entity Mapping Log"
 
-SHEET_COLUMNS = {
-    TAB_STARTUPS: ["entityName", "employeeCount", "canonicalName", "sourceName", "sourceUrl", "collectedAt"],
-    TAB_PRODUCTS: ["productName", "startupName", "canonicalStartup", "pricingModel", "sourceName", "sourceUrl", "collectedAt"],
-    TAB_PAPERS: ["title", "authors", "paper_url", "github_url", "github_stars", "published_date", "sourceName", "sourceUrl", "collectedAt"],
-    TAB_JOBS: ["company", "title", "published_at", "is_remote", "role_family", "location", "date_source", "sourceName", "sourceUrl"],
-    TAB_NEWS: ["headline", "published_at", "date_source", "content", "sourceName", "sourceUrl"],
-    TAB_MAPPING: ["raw_name", "canonical_name", "match_status", "score", "method", "entity_type", "source_url", "resolved_at"],
+# (pretty header, model field name)
+TAB_SCHEMA = {
+    TAB_STARTUPS: [
+        ("entityName", "entity_name"),
+        ("employeeCount", "employee_count"),
+        ("canonicalName", "canonical_name"),
+        ("sourceName", "source_name"),
+        ("sourceUrl", "source_url"),
+        ("collectedAt", "collected_at"),
+    ],
+    TAB_PRODUCTS: [
+        ("productName", "product_name"),
+        ("startupName", "startup_name"),
+        ("canonicalStartup", "canonical_startup"),
+        ("pricingModel", "pricing_model"),
+        ("sourceName", "source_name"),
+        ("sourceUrl", "source_url"),
+        ("collectedAt", "collected_at"),
+    ],
+    TAB_PAPERS: [
+        ("title", "title"),
+        ("authors", "authors_json"),
+        ("paper_url", "paper_url"),
+        ("github_url", "github_url"),
+        ("github_stars", "github_stars"),
+        ("published_date", "published_date"),
+        ("sourceName", "source_name"),
+        ("sourceUrl", "source_url"),
+        ("collectedAt", "collected_at"),
+    ],
+    TAB_JOBS: [
+        ("company", "company"),
+        ("jobTitle", "title"),
+        ("date", "published_at"),
+        ("is_remote", "is_remote"),
+        ("role_family", "role_family"),
+        ("location", "location"),
+        ("date_source", "date_source"),
+        ("sourceName", "source_name"),
+        ("sourceUrl", "source_url"),
+    ],
+    TAB_NEWS: [
+        ("headline", "headline"),
+        ("publishedAt", "published_at"),
+        ("date_source", "date_source"),
+        ("content", "content"),
+        ("sourceName", "source_name"),
+        ("sourceUrl", "source_url"),
+    ],
+    TAB_MAPPING: [
+        ("raw_name", "raw_name"),
+        ("canonical_name", "canonical_name"),
+        ("match_status", "match_status"),
+        ("score", "score"),
+        ("method", "method"),
+        ("entity_type", "entity_type"),
+        ("source_url", "source_url"),
+        ("resolved_at", "resolved_at"),
+    ],
 }
 
+TAB_ORDER = [TAB_STARTUPS, TAB_PRODUCTS, TAB_PAPERS, TAB_JOBS, TAB_NEWS, TAB_MAPPING]
 
-def _dedupe(rows: list[list], key_indices: list[int], quality_index: int | None = None) -> list[list]:
-    """Collapse rows sharing the same identity key (case-insensitive).
 
-    Keeps the "best" row: the one with the most filled cells, so records
-    carrying richer fields (employee counts, stars) win over bare ones."""
+def _cell(model_field: str, record: dict):
+    value = record.get(model_field)
+    if model_field == "authors_json":
+        import json
+
+        try:
+            value = ", ".join(json.loads(record.get("authors_json") or "[]"))
+        except (ValueError, TypeError):
+            value = ""
+    if isinstance(value, bool):
+        return "TRUE" if value else "FALSE"
+    if isinstance(value, datetime):
+        return value.isoformat()
+    if value is None:
+        return ""
+    if isinstance(value, str):
+        return value[:49000]  # Google Sheets cell-limit safety
+    return value
+
+
+def _dedupe(rows: list[list], key_indices: list[int]) -> list[list]:
+    """Collapse rows sharing an identity key; keep the most-filled row so
+    richer records (employee counts, stars) win over bare ones."""
     best: dict[tuple, list] = {}
-    for row in rows[1:]:  # skip header
+    for row in rows[1:]:
         key = tuple(str(row[i] or "").strip().lower() for i in key_indices)
         if not any(key):
             continue
@@ -55,36 +131,11 @@ def _dedupe(rows: list[list], key_indices: list[int], quality_index: int | None 
     return [rows[0]] + [best[k] for k in sorted(best)]
 
 
-def _rows_for(model, columns: list[str], storage) -> list[list]:
-    records = storage.load_table(model)
-    rows: list[list] = [columns]
-    for record in records:
-        row = []
-        for column in columns:
-            value = record.get(column)
-            if column == "authors":
-                import json
-
-                try:
-                    value = ", ".join(json.loads(record.get("authors_json") or "[]"))
-                except (ValueError, TypeError):
-                    value = ""
-            if isinstance(value, bool):
-                value = "TRUE" if value else "FALSE"
-            if value is None:
-                value = ""
-            if isinstance(value, str):
-                value = value[:49000]  # Google Sheets cell limit safety
-            row.append(value)
-        rows.append(row)
-    return rows
-
-
 def _tab_rows(tab: str, storage) -> list[list]:
-    """Rows for one tab, with canonical dedup applied where it matters:
-    startups collapse to unique canonical entities, products to unique
-    (product, startup) pairs, papers to unique canonical URLs."""
-    columns = SHEET_COLUMNS[tab]
+    """Rows (with pretty headers) for one tab, canonical-deduped where needed:
+    startups -> unique canonical entities; products -> unique (product,
+    startup) pairs; papers -> unique canonical URLs."""
+    schema = TAB_SCHEMA[tab]
     model_map = {
         TAB_STARTUPS: Startup,
         TAB_PRODUCTS: Product,
@@ -98,22 +149,28 @@ def _tab_rows(tab: str, storage) -> list[list]:
         from .database import EntityMapping
 
         records = storage.load_table(EntityMapping)
-        return [columns] + [[record.get(c, "") or "" for c in columns] for record in records]
-    rows = _rows_for(model, columns, storage)
+        rows = [[pretty for pretty, _ in schema]]
+        rows += [[_cell(field, record) for _, field in schema] for record in records]
+        return rows
+
+    records = storage.load_table(model)
+    rows = [[pretty for pretty, _ in schema]]
+    rows += [[_cell(field, record) for _, field in schema] for record in records]
+
     if tab == TAB_STARTUPS:
-        canonical_idx = columns.index("canonicalName")
-        entity_idx = columns.index("entityName")
-        rows = _dedupe(rows, [canonical_idx, entity_idx])
+        rows = _dedupe(rows, [schema.index(("canonicalName", "canonical_name")),
+                              schema.index(("entityName", "entity_name"))])
     elif tab == TAB_PRODUCTS:
-        rows = _dedupe(rows, [columns.index("productName"), columns.index("startupName"),
-                              columns.index("canonicalStartup")])
+        rows = _dedupe(rows, [schema.index(("productName", "product_name")),
+                              schema.index(("startupName", "startup_name")),
+                              schema.index(("canonicalStartup", "canonical_startup"))])
     elif tab == TAB_PAPERS:
-        rows = _dedupe(rows, [columns.index("paper_url")])
+        rows = _dedupe(rows, [schema.index(("paper_url", "paper_url"))])
     return rows
 
 
 def export_csv(storage, out_dir: Path = OUT_DIR) -> list[Path]:
-    """Write the 6 tab CSVs (numbers preserved for Startups/Products/Papers)."""
+    """Write the 6 tab CSVs."""
     out_dir.mkdir(parents=True, exist_ok=True)
     paths: list[Path] = []
     for filename, tab in [
@@ -127,16 +184,15 @@ def export_csv(storage, out_dir: Path = OUT_DIR) -> list[Path]:
         rows = _tab_rows(tab, storage)
         path = out_dir / filename
         with path.open("w", encoding="utf-8", newline="") as fh:
-            writer = csv.writer(fh)
-            writer.writerows(rows)
+            csv.writer(fh).writerows(rows)
         paths.append(path)
-        log.info("exported %s (%d rows incl. header)", path.name, len(rows))
+        log.info("exported %s (%d logical rows incl. header)", path.name, len(rows))
     return paths
 
 
 def export_xlsx(storage, out_path: Path | None = None) -> Path:
     """Single 6-tab workbook - the fastest way to populate the public
-    Google Sheet (Drive upload keeps tabs, formatting and values)."""
+    Google Sheet (Drive upload keeps tabs, values and order)."""
     from openpyxl import Workbook
     from openpyxl.styles import Alignment, Font, PatternFill
     from openpyxl.utils import get_column_letter
@@ -149,9 +205,9 @@ def export_xlsx(storage, out_path: Path | None = None) -> Path:
     header_fill = PatternFill("solid", fgColor="1F3864")
     header_font = Font(color="FFFFFF", bold=True)
 
-    for tab in (TAB_STARTUPS, TAB_PRODUCTS, TAB_PAPERS, TAB_JOBS, TAB_NEWS, TAB_MAPPING):
-        columns = SHEET_COLUMNS[tab]
+    for tab in TAB_ORDER:
         rows = _tab_rows(tab, storage)
+        columns = [pretty for pretty, _ in TAB_SCHEMA[tab]]
         sheet = workbook.create_sheet(tab)
         for row in rows:
             sheet.append(row)
@@ -161,9 +217,9 @@ def export_xlsx(storage, out_path: Path | None = None) -> Path:
             cell.alignment = Alignment(vertical="center")
         for idx, column in enumerate(columns, start=1):
             width = min(60, max(12, len(column) + 6))
+            if column in ("content", "authors", "description", "sourceUrl", "paper_url", "github_url"):
+                width = 80
             sheet.column_dimensions[get_column_letter(idx)].width = width
-            if column in ("content", "authors", "description"):
-                sheet.column_dimensions[get_column_letter(idx)].width = 80
         sheet.freeze_panes = "A2"
 
     workbook.save(out_path)
@@ -189,14 +245,15 @@ def upload_sheets(storage, credentials_file: str, spreadsheet_id: str) -> bool:
     document = client.open_by_key(spreadsheet_id)
 
     existing = {ws.title for ws in document.worksheets()}
-    for tab in (TAB_STARTUPS, TAB_PRODUCTS, TAB_PAPERS, TAB_JOBS, TAB_NEWS, TAB_MAPPING):
-        columns = SHEET_COLUMNS[tab]
+    for tab in TAB_ORDER:
+        columns = [pretty for pretty, _ in TAB_SCHEMA[tab]]
         rows = _tab_rows(tab, storage)
         if tab in existing:
             worksheet = document.worksheet(tab)
             worksheet.clear()
         else:
-            worksheet = document.add_worksheet(title=tab, rows=max(len(rows) + 10, 100), cols=len(columns) + 4)
+            worksheet = document.add_worksheet(title=tab, rows=max(len(rows) + 10, 100),
+                                               cols=len(columns) + 4)
         worksheet.update(rows, "A1")
         log.info("uploaded tab %s (%d rows)", tab, len(rows))
     return True

@@ -1,0 +1,8 @@
+{
+ "total": 6308,
+ "MATCHED": 392,
+ "UNMATCHED": 5915,
+ "AMBIGUOUS": 1,
+ "learnedEntities": 5915,
+ "seedEntities": 50
+}

@@ -13,7 +13,11 @@ from src.scrapers.jobs_scraper import (
     parse_rss_jobs,
 )
 from src.scrapers.news_scraper import extract_article_text, parse_feed
-from src.scrapers.product_scraper import infer_startup_name, parse_markdown_tools
+from src.scrapers.product_scraper import (
+    infer_startup_name,
+    parse_ai_collection_sections,
+    parse_markdown_tools,
+)
 from src.scrapers.research_scraper import parse_daily_papers, split_authors
 from src.scrapers.startup_scraper import (
     parse_ai_services_csv,
@@ -319,3 +323,38 @@ def test_parse_daily_papers_extracts_github_fields():
 def test_json_roundtrip_for_raw_records():
     payload = {"a": [1, 2], "b": "text"}
     assert json.loads(json.dumps(payload)) == payload
+
+
+def test_parse_ai_collection_sections():
+    markdown = """## Latest Additions to AI Collection
+### OneKDP
+<img align="left" width="240" src="x.webp" alt="OneKDP">
+
+#### AI book & KDP cover generator with free KDP tools
+
+[Visit](https://thataicollection.com/redirect/onekdp?utm_source=aicollection)
+
+### Frank
+#### AI-Powered Customer Research Platform | Frank
+
+[Visit](https://thataicollection.com/redirect/frank)
+
+### Junk "quoted" | Title
+#### tagline
+[Visit](https://example.com/junk)
+"""
+    records = parse_ai_collection_sections(markdown, "GitHub:ai-collection")
+    names = [r["productName"] for r in records]
+    assert "OneKDP" in names and "Frank" in names
+    assert not any("Junk" in n for n in names)
+    onekdp = next(r for r in records if r["productName"] == "OneKDP")
+    assert "free KDP tools" in (onekdp["pricingHint"] or "")
+
+
+def test_pricing_rules_free_and_combo():
+    from src.llm.orchestrator import classify_pricing
+    assert classify_pricing("AI book & KDP cover generator with free KDP tools") == "FREE"
+    assert classify_pricing("free and paid plans available") == "FREEMIUM"
+    assert classify_pricing("from $19 per month") == "PAID"
+    assert classify_pricing("enterprise-ready LLM platform") == "ENTERPRISE"
+    assert classify_pricing("a chatbot for doctors") is None

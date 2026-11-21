@@ -58,6 +58,7 @@ def setup_logging(verbose: bool = False) -> None:
 # ---------------------------------------------------------------------------
 async def _run_collect_raw(settings: Settings, args) -> dict[str, Any]:
     from .fetcher import Fetcher
+    from .scrapers.base import save_snapshot
     from .scrapers.jobs_scraper import collect_jobs
     from .scrapers.news_scraper import collect_news
     from .scrapers.product_scraper import collect_products
@@ -87,10 +88,18 @@ async def _run_collect_raw(settings: Settings, args) -> dict[str, Any]:
         # products need the startup universe for company inference
         startup_names = [r["entityName"] for r in summary.get("startups", {}).get("records", [])]
         await safe("products", 300, lambda: collect_products(fetcher, settings, known_startups=startup_names))
+        # fill missing pricingModel from vendor homepages (bounded, robots-aware)
+        from .scrapers.product_scraper import probe_missing_pricing
+        product_records = summary.get("products", {}).get("records") or []
+        if product_records:
+            async def probe_stage():
+                await probe_missing_pricing(product_records, fetcher, cap=1100)
+                save_snapshot("products_raw.json", product_records)
+                return {"records": product_records, "counts": {"merged": len(product_records)}}
+            await safe("pricingProbe", 600, probe_stage)
     finally:
         await fetcher.close()
         logger.info("fetcher stats: %s", fetcher.stats)
-    from .scrapers.base import save_snapshot
 
     save_snapshot("run_summary.json", {
         label: {
@@ -118,13 +127,19 @@ def cmd_collect_raw(args) -> int:
 def _startup_envelopes(records: list[dict]) -> list[dict]:
     envelopes = []
     for record in records:
+        source_url = record.get("sourceUrl") or ""
+        if not source_url:
+            # directory exports without a per-company page: cite the dataset itself
+            source_url = ("https://github.com/Sumbal-Naz23/AI-Companies-Dataset"
+                          if "AI Companies Directory" in (record.get("sourceName") or "")
+                          else "https://github.com/github5888/Ai (raw snapshot data/raw/startups_raw.json)")
         content = {
             "entityName": record["entityName"],
             "data": {"employeeCount": record.get("employeeCount")},
             "description": record.get("description"),
         }
         envelopes.append(build_envelope(
-            "STARTUP", record.get("sourceName", "Unknown"), record.get("sourceUrl", ""),
+            "STARTUP", record.get("sourceName", "Unknown"), source_url,
             content, record.get("collectedAt"),
         ))
     return envelopes
@@ -432,6 +447,37 @@ def cmd_stats(args) -> int:
     return 0
 
 
+def cmd_probe_pricing(args) -> int:
+    """Classify pricingModel for products whose source text had no signal,
+    using one compliant request to each vendor's homepage."""
+    import asyncio
+
+    from .config import RAW_DIR
+    from .fetcher import Fetcher
+    from .scrapers.base import save_snapshot
+    from .scrapers.product_scraper import probe_missing_pricing
+
+    snapshot_path = RAW_DIR / "products_raw.json"
+    records = json.loads(snapshot_path.read_text())
+    settings = Settings()
+
+    async def run() -> dict:
+        fetcher = Fetcher(settings)
+        try:
+            return await probe_missing_pricing(records, fetcher, cap=args.cap)
+        finally:
+            await fetcher.close()
+
+    classified = asyncio.run(run())
+    save_snapshot("products_raw.json", records)
+    meta = json.loads((RAW_DIR / "products_sources_meta.json").read_text())
+    meta["pricingProbe"] = classified
+    save_snapshot("products_sources_meta.json", meta)
+    print(json.dumps({"classified": classified,
+                      "stillNull": sum(1 for r in records if not r.get("pricingModel"))}, indent=2))
+    return 0
+
+
 # ---------------------------------------------------------------------------
 # Full pipeline
 # ---------------------------------------------------------------------------
@@ -480,6 +526,10 @@ def build_parser() -> argparse.ArgumentParser:
                         help="also push tabs via Google Sheets API (needs credentials)")
     export.set_defaults(func=cmd_export_sheets)
     sub.add_parser("stats", help="database record counts").set_defaults(func=cmd_stats)
+    probe = sub.add_parser("probe-pricing",
+                           help="classify product pricing from vendor homepages (compliant, bounded)")
+    probe.add_argument("--cap", type=int, default=900)
+    probe.set_defaults(func=cmd_probe_pricing)
     return parser
 
 
