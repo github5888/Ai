@@ -1,0 +1,63 @@
+name: collect-raw
+
+# Distributed crawler worker (Phase V / VI).
+#
+# This workflow IS a pipeline worker node: it runs the same `collect-raw`
+# code path that any crawler host would run, with full network access,
+# and commits the raw snapshots back so enrichment stages can pick them up.
+# In a production deployment this job fans out to N workers via a task queue
+# (see architecture.pdf) - here one worker demonstrates the whole loop.
+
+on:
+  workflow_dispatch:
+    inputs:
+      arxiv_limit:
+        description: "Max arxiv papers per run"
+        default: "1200"
+      pwc_limit:
+        description: "Max Papers-with-Code papers selected"
+        default: "2500"
+  schedule:
+    - cron: "0 3 * * 1"  # weekly refresh (news/jobs stay 24h-fresh via dispatch)
+
+permissions:
+  contents: write
+
+concurrency:
+  group: collect-raw
+  cancel-in-progress: false
+
+jobs:
+  crawl:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run asynchronous crawler (collect-raw)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CONCURRENCY: "8"
+          FRESHNESS_HOURS: "24"
+          USER_AGENT: "GraphOneBot/1.0 (FrontierAtlas assignment pipeline)"
+        run: |
+          python -m src.main collect-raw \
+            --arxiv-limit "${{ github.event.inputs.arxiv_limit || '1200' }}" \
+            --pwc-limit "${{ github.event.inputs.pwc_limit || '2500' }}"
+
+      - name: Commit raw snapshots
+        run: |
+          git config user.name "graphone-crawler"
+          git config user.email "crawler@users.noreply.github.com"
+          git add data/raw
+          git diff --cached --quiet && echo "No new data" || \
+            git commit -m "crawl: refresh raw snapshots ($(date -u +%Y-%m-%dT%H:%MZ)) [skip ci]"
+          git push

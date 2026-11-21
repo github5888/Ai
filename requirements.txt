@@ -1,0 +1,18 @@
+# GraphOne Intelligence Pipeline - runtime dependencies
+aiohttp>=3.9          # async HTTP fetching (Phase V)
+beautifulsoup4>=4.12  # HTML parsing
+lxml>=5.0             # fast parser backend for BeautifulSoup
+feedparser>=6.0       # RSS/Atom parsing (news + job boards)
+python-dateutil>=2.8  # tolerant date parsing (RFC822, ISO-8601, ...)
+pydantic>=2.5         # schema validation for extracted records (Phase III)
+rapidfuzz>=3.6        # fuzzy string matching for entity resolution (Phase IV)
+SQLAlchemy>=2.0       # storage layer (SQLite dev / PostgreSQL prod)
+openpyxl>=3.1         # 6-tab XLSX export (Google Sheets import fallback)
+reportlab>=4.0        # architecture.pdf generation
+gspread>=6.0          # Google Sheets API upload (optional, needs service account)
+google-auth>=2.28     # Google service-account auth
+pandas>=2.0           # Papers-with-Code parquet processing (Phase I)
+pyarrow>=15.0         # parquet reader for the PwC open data dump
+
+# Dev / test
+pytest>=8.0

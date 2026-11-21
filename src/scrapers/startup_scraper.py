@@ -1,0 +1,354 @@
+"""Startup scraper (Phase I-A).
+
+Compliant, documented source strategy - all of these are public directories
+or APIs that permit programmatic access:
+
+1. **Wikipedia category tree** ("Artificial intelligence companies", plus the
+   per-country subcategories) via the MediaWiki API - hundreds to thousands
+   of AI companies, each record citing its own article URL.
+2. **Curated GitHub lists** of AI companies (applied-ml, awesome-european-ai,
+   awesome-robotics-ai-companies, ...) fetched through api.github.com.
+3. **Directory listicles** (e.g. builtin.com company directory) fetched as
+   HTML and parsed with BeautifulSoup.
+4. **Wikidata SPARQL** enrichment for employee counts (P1128) - only where
+   Wikidata itself states the number; otherwise ``employeeCount`` stays null.
+"""
+from __future__ import annotations
+
+import asyncio
+import json
+import logging
+import re
+import urllib.parse
+from typing import Any, Iterable
+
+from ..config import Settings
+from ..fetcher import Fetcher
+from ..utils.text import norm_space, title_case_entity
+from .base import save_snapshot
+
+log = logging.getLogger(__name__)
+
+WIKI_API = "https://en.wikipedia.org/w/api.php"
+
+# Main category + the largest country subcategories of
+# https://en.wikipedia.org/wiki/Category:Artificial_intelligence_companies
+WIKI_CATEGORIES = [
+    "Artificial intelligence companies",
+    "Artificial intelligence companies in the United States",
+    "Artificial intelligence companies in the United Kingdom",
+    "Artificial intelligence companies in India",
+    "Artificial intelligence companies in China",
+    "Artificial intelligence companies in Israel",
+    "Artificial intelligence companies in Germany",
+    "Artificial intelligence companies in France",
+    "Artificial intelligence companies in Canada",
+    "Artificial intelligence companies in Japan",
+    "Artificial intelligence companies in South Korea",
+    "Artificial intelligence companies in Australia",
+    "Artificial intelligence companies in the Netherlands",
+    "Artificial intelligence companies in Switzerland",
+    "Artificial intelligence companies in Sweden",
+    "Artificial intelligence companies in Spain",
+    "Artificial intelligence companies in Italy",
+    "Artificial intelligence companies in Brazil",
+    "Artificial intelligence companies in Russia",
+    "Artificial intelligence companies in Singapore",
+    "Artificial intelligence companies in Nigeria",
+    "Artificial intelligence companies in Kenya",
+]
+
+# Curated GitHub lists (repo -> README path).  Fetched via api.github.com
+# with the raw media type, so this works anywhere GitHub API is reachable.
+GITHUB_COMPANY_LISTS = [
+    {"repo": "eugeneyan/applied-ml", "path": "README.md", "source": "GitHub:eugeneyan/applied-ml"},
+    {"repo": "balloch/awesome-robotics-ai-companies", "path": "README.md",
+     "source": "GitHub:awesome-robotics-ai-companies"},
+    {"repo": "jmbarrancoml/awesome-european-ai", "path": "README.md",
+     "source": "GitHub:awesome-european-ai"},
+    {"repo": "Hardy-Uint/awesome-AI-company-summary", "path": "README.md",
+     "source": "GitHub:awesome-AI-company-summary"},
+    {"repo": "aishwaryanr/awesome-generative-ai-guide", "path": "README.md",
+     "source": "GitHub:awesome-generative-ai-guide"},
+]
+
+# Sections that list papers/courses rather than companies - excluded.
+_NON_COMPANY_SECTION_RE = re.compile(
+    r"paper|course|tutorial|newsletter|podcast|reading|video|talk|dataset|"
+    r"model|library|framework|tool|resource|community|conference|benchmark|blog|"
+    r"cheat|question|interview|awesome|research ?(papers?)?$",
+    re.IGNORECASE,
+)
+
+_LIST_ENTRY_RE = re.compile(
+    r"^\s*[-*]\s+(?:\[(?P<name>[^\]]{2,80})\]\((?P<url>https?://[^)\s]+)\)"
+    r"|(?P<plain>[A-Z][\w&.'\- ]{2,60}))\s*(?:[-–—:|]\s*(?P<desc>.*))?$"
+)
+
+_NAME_STOPWORDS_RE = re.compile(
+    r"\b(papers?|blog|course|newsletter|podcast|dataset|library|framework|"
+    r"awesome|guide|tutorial|collection|list|repo(sitory)?|github|website)\b",
+    re.IGNORECASE,
+)
+
+# Directory listicle candidates (graceful failure if protected/changed).
+LISTICLE_SOURCES = [
+    {"url": "https://builtin.com/artificial-intelligence/ai-companies-usa",
+     "source": "Builtin AI Directory", "kind": "builtin"},
+    {"url": "https://builtin.com/artificial-intelligence/ai-companies-nyc",
+     "source": "Builtin AI Directory NYC", "kind": "builtin"},
+]
+
+_WIKIDATA_SPARQL = "https://query.wikidata.org/sparql"
+
+
+# ---------------------------------------------------------------------------
+# Pure parsers (unit-tested without network)
+# ---------------------------------------------------------------------------
+def parse_wiki_members(payload: dict) -> list[dict]:
+    """Extract namespace-0 (article) members from a MediaWiki categorymembers
+    API response, resolving titles to article URLs."""
+    out: list[dict] = []
+    for member in (payload.get("query", {}) or {}).get("categorymembers", []):
+        if member.get("ns") != 0:
+            continue
+        title = member.get("title")
+        if not title:
+            continue
+        out.append(
+            {
+                "entityName": title_case_entity(title),
+                "employeeCount": None,
+                "sourceName": "Wikipedia",
+                "sourceUrl": "https://en.wikipedia.org/wiki/"
+                + urllib.parse.quote(title.replace(" ", "_")),
+                "sourceCategory": "wikipedia",
+            }
+        )
+    return out
+
+
+def wiki_continue_token(payload: dict) -> str | None:
+    cont = payload.get("continue", {}) or {}
+    return cont.get("cmcontinue")
+
+
+def parse_github_markdown_companies(markdown: str, source_name: str) -> list[dict]:
+    """Parse curated-list markdown into company records.
+
+    Tracks the current section header so papers/courses sections are skipped,
+    and accepts both ``- [Company](url) - note`` and plain-name bullet items.
+    """
+    records: list[dict] = []
+    seen: set[str] = set()
+    current_section = ""
+    for line in markdown.splitlines():
+        if line.startswith("#"):
+            current_section = line.lstrip("#").strip()
+            continue
+        match = _LIST_ENTRY_RE.match(line)
+        if not match:
+            continue
+        name = match.group("name") or match.group("plain")
+        url = match.group("url")
+        desc = match.group("desc") or ""
+        name = norm_space(name)
+        if not name or len(name) < 2 or len(name) > 60:
+            continue
+        if _NAME_STOPWORDS_RE.search(name):
+            continue
+        if _NON_COMPANY_SECTION_RE.search(current_section):
+            continue
+        if name.lower() in seen:
+            continue
+        seen.add(name.lower())
+        records.append(
+            {
+                "entityName": title_case_entity(name),
+                "employeeCount": None,
+                "description": norm_space(desc)[:300] or None,
+                "sourceName": source_name,
+                "sourceUrl": url or current_section,
+                "sourceCategory": "github-list",
+            }
+        )
+    return records
+
+
+def parse_builtin_directory(html: str, source_name: str) -> list[dict]:
+    """Builtin.com directory pages link each company as /company/<slug>."""
+    try:
+        from bs4 import BeautifulSoup
+    except ImportError:  # pragma: no cover
+        return []
+    soup = BeautifulSoup(html, "lxml")
+    records: list[dict] = []
+    seen: set[str] = set()
+    for anchor in soup.find_all("a", href=re.compile(r"^/company/")):
+        name = norm_space(anchor.get_text())
+        if not name or len(name) > 60 or name.lower() in seen:
+            continue
+        seen.add(name.lower())
+        href = anchor.get("href", "")
+        records.append(
+            {
+                "entityName": title_case_entity(name),
+                "employeeCount": None,
+                "sourceName": source_name,
+                "sourceUrl": "https://builtin.com" + href,
+                "sourceCategory": "directory",
+            }
+        )
+    return records
+
+
+def parse_wikidata_employees(sparql_json: dict) -> dict[str, dict]:
+    """P1128 (number of employees) results keyed by company label."""
+    out: dict[str, dict] = {}
+    for binding in sparql_json.get("results", {}).get("bindings", []):
+        label = binding.get("label", {}).get("value")
+        employees = binding.get("employees", {}).get("value")
+        entity = binding.get("item", {}).get("value")
+        if not label or not employees:
+            continue
+        try:
+            out[label] = {"employeeCount": int(float(employees)), "wikidataUrl": entity}
+        except ValueError:
+            continue
+    return out
+
+
+# ---------------------------------------------------------------------------
+# Async collectors
+# ---------------------------------------------------------------------------
+async def collect_wikipedia(fetcher: Fetcher, categories: Iterable[str] = WIKI_CATEGORIES) -> list[dict]:
+    """Crawl the MediaWiki category tree with polite pagination."""
+    all_records: dict[str, dict] = {}
+    for category in categories:
+        cmcontinue: str | None = None
+        category_pages = 0
+        while True:
+            params = {
+                "action": "query",
+                "format": "json",
+                "list": "categorymembers",
+                "cmtitle": f"Category:{category}",
+                "cmlimit": "500",
+                "cmnamespace": "0",
+                "formatversion": "2",
+            }
+            if cmcontinue:
+                params["cmcontinue"] = cmcontinue
+            url = WIKI_API + "?" + urllib.parse.urlencode(params)
+            try:
+                payload = await fetcher.get_json(url)
+            except Exception as exc:  # noqa: BLE001
+                log.warning("wikipedia category failed: %s (%s)", category, exc)
+                break
+            records = parse_wiki_members(payload)
+            for record in records:
+                all_records.setdefault(record["entityName"].lower(), record)
+            category_pages += 1
+            cmcontinue = wiki_continue_token(payload)
+            if not cmcontinue or category_pages >= 6:  # safety valve per category
+                break
+        log.info("wikipedia category '%s' -> %d cumulative companies", category, len(all_records))
+    return list(all_records.values())
+
+
+async def collect_github_lists(fetcher: Fetcher, settings: Settings) -> list[dict]:
+    """Fetch curated GitHub company lists via api.github.com raw contents."""
+    headers = {"Accept": "application/vnd.github.raw+json"}
+    if settings.github_token:
+        headers["Authorization"] = f"Bearer {settings.github_token}"
+    tasks = [
+        fetcher.get(f"https://api.github.com/repos/{src['repo']}/contents/{src['path']}", headers=headers)
+        for src in GITHUB_COMPANY_LISTS
+    ]
+    responses = await asyncio.gather(*tasks, return_exceptions=True)
+    records: dict[str, dict] = {}
+    for src, resp in zip(GITHUB_COMPANY_LISTS, responses):
+        if isinstance(resp, Exception):
+            log.warning("github list failed: %s (%s)", src["repo"], resp)
+            continue
+        if not resp.ok:
+            log.warning("github list failed: %s -> HTTP %s", src["repo"], resp.status)
+            continue
+        parsed = parse_github_markdown_companies(resp.text, src["source"])
+        for record in parsed:
+            records.setdefault(record["entityName"].lower(), record)
+        log.info("github list %s -> %d companies (cumulative %d)", src["repo"], len(parsed), len(records))
+    return list(records.values())
+
+
+async def collect_listicles(fetcher: Fetcher) -> list[dict]:
+    """Fetch directory pages; skip any source that blocks us (no bypassing)."""
+    records: dict[str, dict] = {}
+    for src in LISTICLE_SOURCES:
+        try:
+            if not fetcher.robots_allowed(src["url"]):
+                log.warning("robots.txt disallows %s; skipping", src["url"])
+                continue
+            resp = await fetcher.get(src["url"], max_attempts=2)
+            if not resp.ok:
+                log.warning("listicle blocked/missing %s -> HTTP %s (graceful skip)", src["url"], resp.status)
+                continue
+            parsed = parse_builtin_directory(resp.text, src["source"])
+            for record in parsed:
+                records.setdefault(record["entityName"].lower(), record)
+            log.info("listicle %s -> %d companies", src["url"], len(parsed))
+        except Exception as exc:  # noqa: BLE001
+            log.warning("listicle failed %s (%s)", src["url"], exc)
+    return list(records.values())
+
+
+async def collect_employee_counts(fetcher: Fetcher, labels: Iterable[str]) -> dict[str, dict]:
+    """One batched Wikidata SPARQL query for employee counts (P1128).
+
+    Only numbers Wikidata itself records are returned; everything else stays
+    null (no guessing)."""
+    wanted = [label for label in labels if label][:60]
+    if not wanted:
+        return {}
+    values = " ".join(f'"{urllib.parse.quote(label)}"@en' for label in wanted)
+    query = f"""
+    SELECT ?label ?item ?employees WHERE {{
+      VALUES ?label {{ {values} }}
+      ?item rdfs:label ?label .
+      ?item wdt:P1128 ?employees .
+      FILTER(LANG(?label) = "en")
+    }} LIMIT 200"""
+    url = _WIKIDATA_SPARQL + "?format=json&query=" + urllib.parse.quote(query)
+    try:
+        payload = await fetcher.get_json(url, headers={"Accept": "application/sparql-results+json"})
+        return parse_wikidata_employees(payload)
+    except Exception as exc:  # noqa: BLE001
+        log.warning("wikidata employee enrichment failed: %s", exc)
+        return {}
+
+
+async def collect_startups(fetcher: Fetcher, settings: Settings) -> dict[str, Any]:
+    """Run every startup source; merge by normalised name."""
+    wiki = await collect_wikipedia(fetcher)
+    github = await collect_github_lists(fetcher, settings)
+    listicles = await collect_listicles(fetcher)
+
+    merged: dict[str, dict] = {}
+    for record in wiki + github + listicles:
+        key = record["entityName"].lower()
+        existing = merged.get(key)
+        if existing is None:
+            merged[key] = record
+        else:
+            # keep the richer source URL (prefer direct article/directory page)
+            if not existing.get("sourceUrl") and record.get("sourceUrl"):
+                existing["sourceUrl"] = record["sourceUrl"]
+
+    snapshot = list(merged.values())
+    save_snapshot("startups_raw.json", snapshot)
+    save_snapshot("startups_sources_meta.json", {
+        "wikipedia": len(wiki), "githubLists": len(github), "listicles": len(listicles),
+        "merged": len(snapshot),
+    })
+    return {"records": snapshot, "counts": {"wikipedia": len(wiki), "github": len(github),
+                                            "listicles": len(listicles), "merged": len(snapshot)}}

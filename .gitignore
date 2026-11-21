@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Environment / secrets
+.env
+*.service-account.json
+credentials/
+
+# Heavy intermediate artifacts (raw PwC parquet downloads, tmp)
+data/tmp/
+data/*.db-shm
+data/*.db-wal
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
