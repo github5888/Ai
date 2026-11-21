@@ -73,7 +73,7 @@ LLM extraction, faster GitHub rates, and live Google Sheets upload.
 * Designed for lakhs of records: cursors + snapshots + idempotent upserts (see `architecture.pdf` §3).
 
 ### Phase II — High-fidelity signal ingestion (`news_scraper.py`, `jobs_scraper.py`)
-* 8 AI news feeds (≥5 required) and 6 job boards (≥5 required) — all official APIs/RSS channels.
+* 7 AI news feeds (≥5 required; VentureBeat dropped - it serves a JS bot-challenge instead of its RSS, and bypassing it would violate the compliance-first anti-bot policy) and 6 job boards (≥5 required) — all official APIs/RSS channels.
 * **24-hour freshness**: every timestamp is normalised to ISO-8601 UTC (`src/utils/dates.py`) —
   `"2 hours ago"`, `"Yesterday"`, `"November 21, 2026"`, RFC-822 headers, unix epochs (s **and** ms).
 * Sources that publish no date get the documented `heuristic:first_seen` treatment (never a fabricated date).

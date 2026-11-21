@@ -21,7 +21,10 @@ log = logging.getLogger(__name__)
 NEWS_FEEDS = [
     {"name": "TechCrunch AI", "url": "https://techcrunch.com/category/artificial-intelligence/feed/"},
     {"name": "The Verge AI", "url": "https://www.theverge.com/rss/ai/index.xml"},
-    {"name": "VentureBeat AI", "url": "https://venturebeat.com/category/ai/feed/"},
+    # VentureBeat removed: it sits behind a Vercel security-checkpoint (JS bot
+    # challenge) and its feed returned stale/sponsored items - bypassing the
+    # challenge would violate the compliance-first anti-bot policy, so we
+    # simply drop it.  7 feeds remain (assignment needs >= 5).
     {"name": "Ars Technica AI", "url": "https://arstechnica.com/ai/feed/"},
     {"name": "Wired AI", "url": "https://www.wired.com/feed/tag/ai/latest/rss"},
     {"name": "MIT Technology Review AI",
@@ -104,7 +107,7 @@ async def collect_news(fetcher: Fetcher, window_hours: int = 24,
     per_source: dict[str, int] = {}
     for src, resp in zip(NEWS_FEEDS, feed_results):
         if isinstance(resp, Exception):
-            log.warning("news feed failed: %s (%s)", src["name"], resp)
+            log.warning("news feed failed: %s (%s)", src["name"], str(resp)[:300])
             per_source[src["name"]] = 0
             continue
         if not resp.ok:

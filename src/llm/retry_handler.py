@@ -98,7 +98,9 @@ async def retry_async(
         )
         await sleep(delay)
 
-    raise RetryExhausted(f"all {policy.max_attempts} attempts failed; last error: {last_error!r}")
+    raise RetryExhausted(
+        f"all {policy.max_attempts} attempts failed; last error: {repr(last_error)[:300]}"
+    )
 
 
 class NoRetry(Exception):
