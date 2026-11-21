@@ -1,11 +1,11 @@
 {
  "perSource": {
+  "RemoteOK": 99,
   "Remotive": 16,
   "Arbeitnow": 300,
   "Hacker News (Who is hiring?)": 60,
-  "RemoteOK": 99,
   "We Work Remotely": 25
  },
  "candidates": 500,
- "fresh": 107
+ "fresh": 126
 }
