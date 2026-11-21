@@ -84,14 +84,16 @@ class Fetcher:
             await self._session.close()
 
     # -- core fetch ----------------------------------------------------------
-    async def _raw_get(self, url: str, headers: dict | None = None) -> FetchResponse:
+    async def _raw_get(self, url: str, headers: dict | None = None,
+                       timeout: aiohttp.ClientTimeout | None = None) -> FetchResponse:
         session = await self.session()
         host = urlsplit(url).netloc
         async with self._sem:
             await self._limiter.acquire(host)
             self.stats["requests"] += 1
             try:
-                async with session.get(url, headers=headers or {}, allow_redirects=True) as resp:
+                async with session.get(url, headers=headers or {}, allow_redirects=True,
+                                       timeout=timeout) as resp:
                     raw = await resp.read()
                     text = raw.decode("utf-8", errors="replace")
                     if resp.status in RETRYABLE_STATUS:
@@ -101,7 +103,7 @@ class Fetcher:
                 raise HttpError(599, url, repr(exc)) from exc
 
     async def get(self, url: str, *, headers: dict | None = None,
-                  max_attempts: int = 4) -> FetchResponse:
+                  max_attempts: int = 4, timeout: aiohttp.ClientTimeout | None = None) -> FetchResponse:
         """GET with shared retry policy.  4xx client errors (except 408/429)
         are not retried -- they are deterministic."""
         def classify(resp: FetchResponse | Exception):
@@ -125,7 +127,7 @@ class Fetcher:
             self.stats["retries"] += 1
 
         resp = await retry_async(
-            lambda: self._raw_get(url, headers),
+            lambda: self._raw_get(url, headers, timeout),
             policy=policy,
             classify=classify,
             on_retry=_on_retry,

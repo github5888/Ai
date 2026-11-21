@@ -221,21 +221,34 @@ def parse_wikidata_employees(sparql_json: dict) -> dict[str, dict]:
 # ---------------------------------------------------------------------------
 # Async collectors
 # ---------------------------------------------------------------------------
-async def collect_wikipedia(fetcher: Fetcher, categories: Iterable[str] = WIKI_CATEGORIES) -> list[dict]:
-    """Crawl the MediaWiki category tree with polite pagination."""
+async def collect_wikipedia(fetcher: Fetcher) -> list[dict]:
+    """Crawl the MediaWiki category tree with polite pagination.
+
+    Subcategories are discovered dynamically (cmtype=subcat) instead of being
+    hard-coded, so the scraper keeps working as Wikipedia reorganises its
+    taxonomy (e.g. 'Artificial intelligence companies of the United States')."""
+    ROOT_CATEGORY = "Artificial intelligence companies"
+    categories = [ROOT_CATEGORY]
+    try:
+        subcats = await _wiki_subcategories(fetcher, ROOT_CATEGORY)
+        categories.extend(subcats)
+        log.info("wikipedia: %d subcategories discovered", len(subcats))
+    except Exception as exc:  # noqa: BLE001
+        log.warning("wikipedia subcategory discovery failed (%s); main category only", exc)
+
     all_records: dict[str, dict] = {}
-    for category in categories:
+    for category in categories[:80]:
         cmcontinue: str | None = None
-        category_pages = 0
+        pages_crawled = 0
         while True:
             params = {
                 "action": "query",
                 "format": "json",
+                "formatversion": "2",
                 "list": "categorymembers",
                 "cmtitle": f"Category:{category}",
                 "cmlimit": "500",
                 "cmnamespace": "0",
-                "formatversion": "2",
             }
             if cmcontinue:
                 params["cmcontinue"] = cmcontinue
@@ -248,12 +261,37 @@ async def collect_wikipedia(fetcher: Fetcher, categories: Iterable[str] = WIKI_C
             records = parse_wiki_members(payload)
             for record in records:
                 all_records.setdefault(record["entityName"].lower(), record)
-            category_pages += 1
+            pages_crawled += 1
             cmcontinue = wiki_continue_token(payload)
-            if not cmcontinue or category_pages >= 6:  # safety valve per category
+            if not cmcontinue or pages_crawled >= 6:  # safety valve per category
                 break
-        log.info("wikipedia category '%s' -> %d cumulative companies", category, len(all_records))
+    log.info("wikipedia -> %d unique companies across %d categories",
+             len(all_records), len(categories))
     return list(all_records.values())
+
+
+async def _wiki_subcategories(fetcher: Fetcher, root_category: str,
+                              max_pages: int = 4) -> list[str]:
+    """List direct subcategories of a category (cmtype=14)."""
+    subcats: list[str] = []
+    cmcontinue: str | None = None
+    for _ in range(max_pages):
+        params = {
+            "action": "query", "format": "json", "formatversion": "2",
+            "list": "categorymembers", "cmtitle": f"Category:{root_category}",
+            "cmlimit": "500", "cmtype": "14",
+        }
+        if cmcontinue:
+            params["cmcontinue"] = cmcontinue
+        payload = await fetcher.get_json(WIKI_API + "?" + urllib.parse.urlencode(params))
+        for member in (payload.get("query", {}) or {}).get("categorymembers", []):
+            title = member.get("title", "")
+            if title.startswith("Category:"):
+                subcats.append(title.removeprefix("Category:"))
+        cmcontinue = wiki_continue_token(payload)
+        if not cmcontinue:
+            break
+    return subcats
 
 
 async def collect_github_lists(fetcher: Fetcher, settings: Settings) -> list[dict]:

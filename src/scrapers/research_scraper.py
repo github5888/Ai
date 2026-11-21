@@ -23,6 +23,8 @@ import urllib.parse
 from pathlib import Path
 from typing import Any, Callable, Iterable
 
+import aiohttp
+
 from ..config import Settings, TMP_DIR
 from ..fetcher import Fetcher
 from ..utils.dates import parse_timestamp
@@ -261,9 +263,12 @@ async def collect_pwc_dump(fetcher: Fetcher, limit: int = 2500,
     """Download the PwC open-data parquet slices and select the newest slice.
 
     The full dump is ~600MB; it lives in data/tmp (git-ignored) and only the
-    selected paper slice is persisted to data/raw."""
+    selected paper slice is persisted to data/raw.  Column sets are resolved
+    defensively from each parquet's schema (the upstream dump has evolved)."""
     import pandas as pd  # local import: only needed for this source
+    import pyarrow.parquet as pq
 
+    big_download_timeout = aiohttp.ClientTimeout(total=900, connect=30)
     tmp_dir.mkdir(parents=True, exist_ok=True)
     paper_paths: list[Path] = []
     for part in range(PWC_PAPER_PARTS):
@@ -271,7 +276,7 @@ async def collect_pwc_dump(fetcher: Fetcher, limit: int = 2500,
         path = tmp_dir / f"papers-with-abstracts-{name}"
         if not path.exists() or path.stat().st_size < 1000:
             url = f"{PWC_HF_BASE}/papers-with-abstracts/resolve/main/data/{name}"
-            resp = await fetcher.get(url, max_attempts=3)
+            resp = await fetcher.get(url, max_attempts=3, timeout=big_download_timeout)
             if not resp.ok:
                 log.error("PwC paper part %d failed: HTTP %s", part, resp.status)
                 return []
@@ -281,16 +286,32 @@ async def collect_pwc_dump(fetcher: Fetcher, limit: int = 2500,
     links_path = tmp_dir / "links-between-paper-and-code.parquet"
     if not links_path.exists() or links_path.stat().st_size < 1000:
         url = f"{PWC_HF_BASE}/links-between-paper-and-code/resolve/main/data/train-00000-of-00001.parquet"
-        resp = await fetcher.get(url, max_attempts=3)
+        resp = await fetcher.get(url, max_attempts=3, timeout=big_download_timeout)
         if resp.ok:
             links_path.write_bytes(resp.raw)
         else:
             log.warning("PwC links parquet failed: HTTP %s (papers without repos)", resp.status)
 
-    frames = [pd.read_parquet(p, columns=["id", "arxiv_id", "title", "url_abs", "published", "authors"])
-              for p in paper_paths]
+    needed = ["id", "arxiv_id", "title", "url_abs", "published", "authors"]
+    frames = []
+    common_columns: list[str] | None = None
+    for path in paper_paths:
+        schema_columns = list(pq.ParquetFile(path).schema.names)
+        keep = [c for c in needed if c in schema_columns]
+        if common_columns is None:
+            common_columns = keep
+        else:
+            common_columns = [c for c in common_columns if c in keep]
+        frames.append(pd.read_parquet(path, columns=keep))
+    log.info("PwC dump columns resolved: %s", common_columns)
     papers_df = pd.concat(frames, ignore_index=True)
-    links_df = pd.read_parquet(links_path) if links_path.exists() else None
+
+    links_df = None
+    if links_path.exists():
+        link_columns = [c for c in ("paper_id", "repo_url", "is_official")
+                        if c in pq.ParquetFile(links_path).schema.names]
+        if {"paper_id", "repo_url"}.issubset(set(link_columns)):
+            links_df = pd.read_parquet(links_path, columns=link_columns)
 
     records = parse_pwc_frames(papers_df, links_df, limit=limit)
     log.info("papers-with-code dump -> %d papers selected", len(records))
@@ -299,8 +320,21 @@ async def collect_pwc_dump(fetcher: Fetcher, limit: int = 2500,
 
 async def collect_papers(fetcher: Fetcher, settings: Settings,
                          arxiv_limit: int = 1200, pwc_limit: int = 2500) -> dict:
-    arxiv_records = await collect_arxiv(fetcher, arxiv_limit)
-    pwc_records = await collect_pwc_dump(fetcher, pwc_limit)
+    arxiv_records: list[dict] = []
+    pwc_records: list[dict] = []
+    errors: list[str] = []
+    for label, collector in (
+        ("arxiv", lambda: collect_arxiv(fetcher, arxiv_limit)),
+        ("papersWithCode", lambda: collect_pwc_dump(fetcher, pwc_limit)),
+    ):
+        try:
+            if label == "arxiv":
+                arxiv_records = await collector()
+            else:
+                pwc_records = await collector()
+        except Exception as exc:  # noqa: BLE001
+            errors.append(f"{label}: {exc!r}")
+            log.exception("paper source failed: %s", label)
 
     merged: dict[str, dict] = {}
     for record in pwc_records + arxiv_records:  # arxiv (fresher) wins on clash
@@ -316,8 +350,9 @@ async def collect_papers(fetcher: Fetcher, settings: Settings,
     snapshot = list(merged.values())
     save_snapshot("papers_raw.jsonl", snapshot)
     save_snapshot("papers_sources_meta.json", {
-        "arxiv": len(arxiv_records), "papersWithCode": len(pwc_records), "merged": len(snapshot),
+        "arxiv": len(arxiv_records), "papersWithCode": len(pwc_records),
+        "merged": len(snapshot), "errors": errors,
     })
     return {"records": snapshot, "counts": {"arxiv": len(arxiv_records),
                                             "papersWithCode": len(pwc_records),
-                                            "merged": len(snapshot)}}
+                                            "merged": len(snapshot), "errors": errors}}

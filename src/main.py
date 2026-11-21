@@ -87,6 +87,16 @@ async def _run_collect_raw(settings: Settings, args) -> dict[str, Any]:
     finally:
         await fetcher.close()
         logger.info("fetcher stats: %s", fetcher.stats)
+    from .scrapers.base import save_snapshot
+
+    save_snapshot("run_summary.json", {
+        label: {
+            "counts": value.get("counts") if isinstance(value, dict) and value.get("counts") else None,
+            "error": value.get("error") if isinstance(value, dict) else None,
+            "recordCount": len(value.get("records") or []) if isinstance(value, dict) else 0,
+        }
+        for label, value in summary.items()
+    })
     return summary
 
 
