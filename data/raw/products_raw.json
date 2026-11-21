@@ -18,21 +18,21 @@
   "sourceName": "GitHub:awesome-generative-ai",
   "sourceUrl": "https://www.nytimes.com/2022/10/21/technology/generative-ai.html",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "PARTY"
  },
  {
   "productName": "AI's New Creative Streak Sparks a Silicon Valley Gold Rush",
   "sourceName": "GitHub:awesome-generative-ai",
   "sourceUrl": "https://www.wired.com/story/ais-new-creative-streak-sparks-a-silicon-valley-gold-rush/",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Spark"
  },
  {
   "productName": "ChatGPT Heralds an Intellectual Revolution",
   "sourceName": "GitHub:awesome-generative-ai",
   "sourceUrl": "https://www.wsj.com/articles/chatgpt-heralds-an-intellectual-revolution-enlightenment-artificial-intelligence-homo-technicus-technology-cognition-morality-philosophy-774331c6",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Intellect"
  },
  {
   "productName": "OpenAI API",
@@ -277,7 +277,7 @@
   "sourceName": "GitHub:awesome-generative-ai",
   "sourceUrl": "https://www.chatbotui.com/",
   "pricingModel": "FREE",
-  "startupName": "Chatbot UI"
+  "startupName": "ChatBot"
  },
  {
   "productName": "Perplexity AI",
@@ -354,7 +354,7 @@
   "sourceName": "GitHub:awesome-generative-ai",
   "sourceUrl": "https://www.gomoonbeam.com/",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Beam"
  },
  {
   "productName": "copy.ai",
@@ -382,7 +382,7 @@
   "sourceName": "GitHub:awesome-generative-ai",
   "sourceUrl": "https://www.hypotenuse.ai/",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Hypotenuse AI"
  },
  {
   "productName": "Lavender",
@@ -557,7 +557,7 @@
   "sourceName": "GitHub:awesome-generative-ai",
   "sourceUrl": "https://www.open-notebook.ai",
   "pricingModel": "FREE",
-  "startupName": null
+  "startupName": "Open"
  },
  {
   "productName": "Otter.ai",
@@ -620,7 +620,7 @@
   "sourceName": "GitHub:awesome-generative-ai",
   "sourceUrl": "https://www.explainpaper.com/",
   "pricingModel": null,
-  "startupName": "Explainpaper"
+  "startupName": "Plai"
  },
  {
   "productName": "Consensus",
@@ -662,7 +662,7 @@
   "sourceName": "GitHub:awesome-generative-ai",
   "sourceUrl": "https://asreview.nl/",
   "pricingModel": "FREE",
-  "startupName": "ASReview"
+  "startupName": "Revi"
  },
  {
   "productName": "Rayyan",
@@ -774,7 +774,7 @@
   "sourceName": "GitHub:awesome-generative-ai",
   "sourceUrl": "https://stenography.dev/",
   "pricingModel": null,
-  "startupName": "Stenography"
+  "startupName": "Graph"
  },
  {
   "productName": "Mintlify",
@@ -949,7 +949,7 @@
   "sourceName": "GitHub:awesome-generative-ai",
   "sourceUrl": "https://helicone.ai/",
   "pricingModel": "FREE",
-  "startupName": null
+  "startupName": "Cone"
  },
  {
   "productName": "Wren AI",
@@ -970,7 +970,7 @@
   "sourceName": "GitHub:awesome-generative-ai",
   "sourceUrl": "https://langfuse.com/",
   "pricingModel": "FREE",
-  "startupName": "Langfuse"
+  "startupName": "Fuse"
  },
  {
   "productName": "MLflow",
@@ -1117,7 +1117,7 @@
   "sourceName": "GitHub:awesome-generative-ai",
   "sourceUrl": "https://opencode.ai",
   "pricingModel": "FREE",
-  "startupName": "OpenCode"
+  "startupName": "Open"
  },
  {
   "productName": "Mastra",
@@ -1131,7 +1131,7 @@
   "sourceName": "GitHub:awesome-generative-ai",
   "sourceUrl": "https://openclaw.ai",
   "pricingModel": "FREE",
-  "startupName": "OpenClaw"
+  "startupName": "Open"
  },
  {
   "productName": "moltbook",
@@ -1152,7 +1152,7 @@
   "sourceName": "GitHub:awesome-generative-ai",
   "sourceUrl": "https://openwork.bot",
   "pricingModel": null,
-  "startupName": "Openwork"
+  "startupName": "Open"
  },
  {
   "productName": "Agent Skills",
@@ -1299,7 +1299,7 @@
   "sourceName": "GitHub:awesome-generative-ai",
   "sourceUrl": "https://www.photoroom.com/",
   "pricingModel": null,
-  "startupName": "PhotoRoom"
+  "startupName": "Photoroom"
  },
  {
   "productName": "Photo AI",
@@ -1425,14 +1425,14 @@
   "sourceName": "GitHub:awesome-generative-ai",
   "sourceUrl": "https://lexica.art/",
   "pricingModel": null,
-  "startupName": "Lexica"
+  "startupName": "Lexi"
  },
  {
   "productName": "OpenArt",
   "sourceName": "GitHub:awesome-generative-ai",
   "sourceUrl": "https://openart.ai/",
   "pricingModel": null,
-  "startupName": "OpenArt"
+  "startupName": "Open"
  },
  {
   "productName": "PromptHero",
@@ -1586,7 +1586,7 @@
   "sourceName": "GitHub:awesome-generative-ai",
   "sourceUrl": "https://www.d-id.com/",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "D-ID"
  },
  {
   "productName": "Affogato",
@@ -1614,7 +1614,7 @@
   "sourceName": "GitHub:awesome-generative-ai",
   "sourceUrl": "https://www.resemble.ai/",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Semble AI"
  },
  {
   "productName": "WellSaid",
@@ -1649,7 +1649,7 @@
   "sourceName": "GitHub:awesome-generative-ai",
   "sourceUrl": "https://thewh1teagle.github.io/vibe/",
   "pricingModel": "FREE",
-  "startupName": null
+  "startupName": "Scribe"
  },
  {
   "productName": "Parakeet",
@@ -1775,7 +1775,7 @@
   "sourceName": "GitHub:awesome-generative-ai",
   "sourceUrl": "https://morpher.com/ai",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Morph"
  },
  {
   "productName": "Whimsical AI",
@@ -1873,7 +1873,7 @@
   "sourceName": "GitHub:awesome-generative-ai",
   "sourceUrl": "https://poloclub.github.io/transformer-explainer/",
   "pricingModel": "FREE",
-  "startupName": null
+  "startupName": "Plai"
  },
  {
   "productName": "Tools and Resources for AI Art",
@@ -1887,14 +1887,14 @@
   "sourceName": "GitHub:awesome-generative-ai",
   "sourceUrl": "https://twitter.com/sonyatweetybird/status/1584580362339962880",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Scape"
  },
  {
   "productName": "Startups - @builtwithgenai",
   "sourceName": "GitHub:awesome-generative-ai",
   "sourceUrl": "https://airtable.com/shr6nfE9FOHp17IjG/tblL3ekHZfkm3p6YT",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Star"
  },
  {
   "productName": "The Generative AI Index",
@@ -1936,7 +1936,7 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://nhlocal.github.io/AiTimeline/",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Timeline"
  },
  {
   "productName": "Agents Marketplace",
@@ -1950,7 +1950,7 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://cartography-of-generative-ai.net/",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Graph"
  },
  {
   "productName": "The Rise of Generative AI Large Language Models (LLMs)",
@@ -1964,7 +1964,7 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://x.com/TheAITimeline",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Timeline"
  },
  {
   "productName": "A Brief History of Generative AI - DATAVERSITY",
@@ -1978,14 +1978,14 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://generativeaitimeline.com/",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Timeline"
  },
  {
   "productName": "Timeline of AI forecasts - AI Digest",
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://theaidigest.org/timeline",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Timeline"
  },
  {
   "productName": "Generative AI Iceberg",
@@ -2013,14 +2013,14 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://briansolis.com/2023/12/introducing-the-genai-prism-infographic-a-framework-for-colalborating-with-generative-ai/",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Graph"
  },
  {
   "productName": "LLM Visualization",
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://bbycroft.net/llm",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "VISUA"
  },
  {
   "productName": "The Building Blocks of Generative AI | by Jonathan Shriftman | Medium",
@@ -2062,7 +2062,7 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://aiindex.stanford.edu/report/",
   "pricingModel": null,
-  "startupName": "Artificial Intelligence"
+  "startupName": "telli"
  },
  {
   "productName": "A Survey of Large Language Models",
@@ -2076,7 +2076,7 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://www.linkedin.com/feed/update/urn:li:activity:7044233450295316480",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Timeline"
  },
  {
   "productName": "Who Owns the Generative AI Platform? | Andreessen Horowitz",
@@ -2118,35 +2118,35 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://lifearchitect.ai/timeline/",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Timeline"
  },
  {
   "productName": "A Review of Generative AI from Historical Perspectives",
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://www.techrxiv.org/articles/preprint/A_Review_of_Generative_AI_from_Historical_Perspectives/22097942",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Revi"
  },
  {
   "productName": "Matt Shumer on Twitter: \"The definitive AI market map Twitter thread\"",
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://twitter.com/mattshumer_/status/1620465468229451776",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Fini"
  },
  {
   "productName": "Engines of Wow: AI Art Comes of Age – Steve Murch",
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://www.stevemurch.com/engines-of-wow-ai-art-comes-of-age/2022/12",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Engines"
  },
  {
   "productName": "AI exploded on the scene at the end of 2022 / Twitter",
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://twitter.com/RamaswmySridhar/status/1613271413020037120",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Explo"
  },
  {
   "productName": "AI-Generated Art",
@@ -2223,7 +2223,7 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://intlekt.io/2023/10/29/artificial-intelligence-at-the-service-of-collective-intelligence/",
   "pricingModel": null,
-  "startupName": "Artificial Intelligence"
+  "startupName": "telli"
  },
  {
   "productName": "Licensing is neither feasible nor effective for addressing AI risks",
@@ -2251,7 +2251,7 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://johnnosta.medium.com/redefining-bias-the-human-prejudice-against-ai-a1f225b0b2c2",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Fini"
  },
  {
   "productName": "AI Art and its Impact on Artists",
@@ -2328,7 +2328,7 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://deepmarkets.substack.com/p/synthetic-creativity",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Synth"
  },
  {
   "productName": "Deep Else",
@@ -2363,7 +2363,7 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://www.reddit.com/r/StableDiffusion/comments/xgv0dw/rutkowski_battling_ai_art_overlord/",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Overlord"
  },
  {
   "productName": "Using AI to create art is NOT art! | Reddit : ArtistLounge",
@@ -2377,7 +2377,7 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://www.newyorker.com/culture/infinite-scroll/appreciating-the-poetic-misunderstandings-of-ai-art?s=09",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Andi"
  },
  {
   "productName": "The case against AI-generated users - IDEO",
@@ -2398,7 +2398,7 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://www.researchgate.net/publication/382802495_Deconstructing_the_AI_Myth_Fallacies_and_Harms_of_Algorithmification",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Struct"
  },
  {
   "productName": "Challenging The Myths of Generative AI | TechPolicy.Press",
@@ -2412,7 +2412,7 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://www.ontestautomation.com/i-am-tired-of-ai/",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Toma"
  },
  {
   "productName": "I Taught for Most of My Career. I Quit Because of ChatGPT | TIME",
@@ -2426,7 +2426,7 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://www.safe.ai/ai-risk",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Astro"
  },
  {
   "productName": "The AI Risk Repository",
@@ -2468,7 +2468,7 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://spectrum.ieee.org/midjourney-copyright",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "VISUA"
  },
  {
   "productName": "AI in Education Group Meeting Notes - Google Docs",
@@ -2545,14 +2545,14 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://www.ben-evans.com/benedictevans/2023/7/2/working-with-ai",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Toma"
  },
  {
   "productName": "Generative AI Takes Stereotypes and Bias From Bad to Worse",
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://www.bloomberg.com/graphics/2023-generative-ai-bias/",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Type"
  },
  {
   "productName": "Governance of superintelligence by OpenAI",
@@ -2580,7 +2580,7 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://futureoflife.org/open-letter/pause-giant-ai-experiments/",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Open"
  },
  {
   "productName": "\"OpenAI released plugins for ChatGPT\"",
@@ -2594,7 +2594,7 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://www.theatlantic.com/technology/archive/2022/12/chatgpt-ai-writing-college-student-essays/672371/",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Atla"
  },
  {
   "productName": "What ChatGPT and generative AI mean for science | Nature",
@@ -2622,7 +2622,7 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://www.nature.com/articles/d41586-023-00056-7",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Abstra"
  },
  {
   "productName": "The Dark Risk of Large Language Models | WIRED UK",
@@ -2713,7 +2713,7 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://llm.extractum.io/",
   "pricingModel": "FREE",
-  "startupName": null
+  "startupName": "Explo"
  },
  {
   "productName": "OrbicAI",
@@ -2727,7 +2727,7 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://altern.ai/",
   "pricingModel": null,
-  "startupName": "Altern"
+  "startupName": "Alter"
  },
  {
   "productName": "ainave",
@@ -2846,14 +2846,14 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://altern.ai",
   "pricingModel": null,
-  "startupName": "Altern"
+  "startupName": "Alter"
  },
  {
   "productName": "The Generative AI Landscape",
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://ai-collection.org/",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Scape"
  },
  {
   "productName": "The ultimate list of AI tools for creators | Descript",
@@ -2888,7 +2888,7 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://learn.nvidia.com/courses/course-detail?course_id=course-v1:DLI+S-FX-07+V1",
   "pricingModel": null,
-  "startupName": "NVIDIA"
+  "startupName": "Plai"
  },
  {
   "productName": "DataCamp's Become a Generative AI Developer series",
@@ -2965,14 +2965,14 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://www.bustbright.com/product/words-are-images-7-week-online-class-starting-october-24th-2022-/331",
   "pricingModel": null,
-  "startupName": "Machine learning"
+  "startupName": "BRIGHT"
  },
  {
   "productName": "Grokking Stable Diffusion.ipynb - Colaboratory - Part 1",
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://colab.research.google.com/drive/1dlgggNa5Mz8sEAGU0wFCHhGLFooW_pf1?usp=sharing",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "CoLab"
  },
  {
   "productName": "Practical Deep Learning for Coders 2023 - Part II",
@@ -3084,7 +3084,7 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://startkit.ai",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Star"
  },
  {
   "productName": "No-Code Scraper",
@@ -3196,7 +3196,7 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://www.usetailor.com",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Tailor"
  },
  {
   "productName": "ZZZ Code AI",
@@ -3231,14 +3231,14 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://animalai.co/",
   "pricingModel": null,
-  "startupName": "AnimalAI"
+  "startupName": "Alai"
  },
  {
   "productName": "starryai",
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://www.starryai.com/",
   "pricingModel": null,
-  "startupName": "starryai"
+  "startupName": "Star"
  },
  {
   "productName": "ProsePainter",
@@ -3308,7 +3308,7 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://www.remove.bg/",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Remo"
  },
  {
   "productName": "Quick, Draw!",
@@ -3357,7 +3357,7 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://www.voicesphere.co/",
   "pricingModel": null,
-  "startupName": "Voicesphere"
+  "startupName": "Sphere"
  },
  {
   "productName": "Tune AI",
@@ -3518,7 +3518,7 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://numind.ai/blog/outclassing-frontier-llms----nuextract-2-0-takes-the-lead-in-information-extraction",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "NuMind"
  },
  {
   "productName": "LLMSTXT.NEW",
@@ -3574,7 +3574,7 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://huyenchip.com/2023/08/16/llm-research-open-challenges.html",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Open"
  },
  {
   "productName": "Automatic Hallucination detection with SelfCheckGPT NLI",
@@ -3588,7 +3588,7 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://bdtechtalks.com/2023/11/27/streamingllm/",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Stream"
  },
  {
   "productName": "Practical Tips for Finetuning LLMs Using LoRA (Low-Rank Adaptation)",
@@ -3609,7 +3609,7 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://www.hbritalia.it/userUpload/ebook_Generative_AI_inglese.pdf",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Nova"
  },
  {
   "productName": "The TextFX project",
@@ -3784,7 +3784,7 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://zapier.com/blog/gpt-3-prompt/",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Zapi"
  },
  {
   "productName": "Prompt Box",
@@ -3826,7 +3826,7 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://colab.research.google.com/github/pharmapsychotic/clip-interrogator/blob/main/clip_interrogator.ipynb#scrollTo=rbDEMDGJrJEo",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "CoLab"
  },
  {
   "productName": "Useful Prompt Engineering tools and resources | Reddit",
@@ -3840,7 +3840,7 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://promptomania.com/",
   "pricingModel": null,
-  "startupName": "promptoMANIA"
+  "startupName": "Toma"
  },
  {
   "productName": "list of artists for SD v1.4 A-C / D-I / J-N / O-Z",
@@ -3889,7 +3889,7 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://tools.saxifrage.xyz/prompt",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "VISUA"
  },
  {
   "productName": "Prompt Engineering Template - Google Sheets",
@@ -3910,7 +3910,7 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://aesthetics.fandom.com/wiki/List_of_Aesthetics",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Aesthetic"
  },
  {
   "productName": "DALL·Ery GALL·Ery",
@@ -4001,7 +4001,7 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://towardsdatascience.com/forget-rag-the-future-is-rag-fusion-1147298d8ad1",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Forge"
  },
  {
   "productName": "Rerankers and Two-Stage Retrieval | Pinecone",
@@ -4029,7 +4029,7 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://wattenberger.com/thoughts/yay-embeddings-math",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Berge"
  },
  {
   "productName": "The Hidden Life of Embeddings: Linus Lee - YouTube",
@@ -4078,7 +4078,7 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://www.tailortask.ai",
   "pricingModel": null,
-  "startupName": "TailorTask"
+  "startupName": "Tailor"
  },
  {
   "productName": "Practices for Governing Agentic AI Systems",
@@ -4092,21 +4092,21 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://www.prompthub.us/blog/exploring-multi-persona-prompting-for-better-outputs",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Explo"
  },
  {
   "productName": "Conceptual Framework for Autonomous Cognitive Entities",
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://arxiv.org/abs/2310.06775",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Cognitive"
  },
  {
   "productName": "Mindstorms in Natural Language-Based Societies of Mind",
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://arxiv.org/abs/2305.17066",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Minds"
  },
  {
   "productName": "AutoGen | Microsoft",
@@ -4162,7 +4162,7 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://www.chatarena.org/",
   "pricingModel": null,
-  "startupName": "ChatArena"
+  "startupName": "Arena"
  },
  {
   "productName": "Fine-Tuner.ai",
@@ -4183,7 +4183,7 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://agentgpt.reworkd.ai/",
   "pricingModel": null,
-  "startupName": "AgentGPT"
+  "startupName": "ENTG"
  },
  {
   "productName": "Generative Agents: Interactive Simulacra of Human Behavior",
@@ -4218,7 +4218,7 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://www.confident-ai.com/blog/llm-benchmarks-mmlu-hellaswag-and-beyond",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Confident AI"
  },
  {
   "productName": "LLM Leaderboards",
@@ -4267,7 +4267,7 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://arize.com/blog-course/llm-evaluation-the-definitive-guide/",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Benchmark"
  },
  {
   "productName": "How to Evaluate, Compare, and Optimize LLM Systems",
@@ -4295,7 +4295,7 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://arxiv.org/abs/2306.05685",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "ChatBot"
  },
  {
   "productName": "Criteria Evaluation | 🦜️🔗 LangChain",
@@ -4337,14 +4337,14 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://chat.lmsys.org/?arena",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "ChatBot"
  },
  {
   "productName": "Sharing LangSmith Benchmarks",
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://blog.langchain.dev/public-langsmith-benchmarks/",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Benchmark"
  },
  {
   "productName": "LLM Comparison/Test",
@@ -4435,7 +4435,7 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://www.edenai.co/?referral=partner-producthunt8&ref=producthunt",
   "pricingModel": null,
-  "startupName": "Eden AI"
+  "startupName": "Eden"
  },
  {
   "productName": "Dify",
@@ -4463,7 +4463,7 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://jxnl.github.io/instructor/",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Struct"
  },
  {
   "productName": "One AI",
@@ -4498,7 +4498,7 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://atlas.mitre.org/",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Atla"
  },
  {
   "productName": "OWASP Top 10 for Large Language Model Applications",
@@ -4568,7 +4568,7 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://medium.com/@avra42/getting-started-with-langchain-a-powerful-tool-for-working-with-large-language-models-286419ba0842",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Star"
  },
  {
   "productName": "Jack AI",
@@ -4589,7 +4589,7 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://aicamp.so/",
   "pricingModel": null,
-  "startupName": "AICamp"
+  "startupName": "AICA"
  },
  {
   "productName": "Yomu",
@@ -4638,7 +4638,7 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://chatbotkit.com/",
   "pricingModel": null,
-  "startupName": "ChatBotKit"
+  "startupName": "ChatBot"
  },
  {
   "productName": "Boring Report",
@@ -4701,21 +4701,21 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://app.inferkit.com/demo",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Infer"
  },
  {
   "productName": "CopyHat",
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://copyhat.com/",
   "pricingModel": null,
-  "startupName": "CopyHat"
+  "startupName": "Yhat"
  },
  {
   "productName": "Lucid Lyrics - AI Assisted Art",
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://www.lucidlyricsart.com/",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Lucid"
  },
  {
   "productName": "Authors A.I.",
@@ -4764,7 +4764,7 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://undermind.ai/home/",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Undermind"
  },
  {
   "productName": "SciSummary",
@@ -4799,7 +4799,7 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://nested-knowledge.com/",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Edge"
  },
  {
   "productName": "Litmaps",
@@ -4890,14 +4890,14 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://notes.aimodels.fyi/transforming-2d-images-into-3d-with-the-adampi-ai-model/",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Adam"
  },
  {
   "productName": "Word-As-Image for Semantic Typography",
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://wordasimage.github.io/Word-As-Image-Page/",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Graph"
  },
  {
   "productName": "Muse: Text-To-Image Generation via Masked Generative Transformers",
@@ -4918,7 +4918,7 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://proximacentaurib.notion.site/39805c50735849cfa54b5d688587e12e?v=b9ea748623e342fdae02d07c86c668bf",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Synth"
  },
  {
   "productName": "Introduction — PyTTI-Tools",
@@ -4932,7 +4932,7 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://colab.research.google.com/github/pytti-tools/pytti-notebook/blob/main/pyttitools-PYTTI.ipynb",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "CoLab"
  },
  {
   "productName": "dribnet/pixray-text2image – Run with an API on Replicate",
@@ -5016,14 +5016,14 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://colab.research.google.com/github/dribnet/clipit/blob/master/demos/PixelDrawer.ipynb",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "CoLab"
  },
  {
   "productName": "CLIP Guided Diffusion HQ 512x512.ipynb - Colaboratory",
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://colab.research.google.com/drive/1V66mUeJbXrTuQITvJunvnWVn96FEbSI3#scrollTo=X5gODNAMEUCR",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "CoLab"
  },
  {
   "productName": "CoG 21",
@@ -5051,7 +5051,7 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://invoke-ai.github.io/InvokeAI/",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Invo"
  },
  {
   "productName": "Stability.ai REST API Documentation",
@@ -5086,7 +5086,7 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://atlas.nomic.ai/map/809ef16a-5b2d-4291-b772-a913f4c8ee61/9ed7d171-650b-4526-85bf-3592ee51ea31",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Atla"
  },
  {
   "productName": "Diffusion Models in Vision: A Survey | DeepAI",
@@ -5100,7 +5100,7 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://www.patreon.com/sxela",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Warp"
  },
  {
   "productName": "DecorAI",
@@ -5142,7 +5142,7 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://playgroundai.com/",
   "pricingModel": null,
-  "startupName": "Playground AI"
+  "startupName": "Playground"
  },
  {
   "productName": "Astria",
@@ -5177,7 +5177,7 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://enstil.ai/?source=12",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Open"
  },
  {
   "productName": "Dezgo - Text-to-Image AI generator",
@@ -5240,7 +5240,7 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "http://osmosis.studio/",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Osmosis"
  },
  {
   "productName": "Artistic.wtf",
@@ -5282,7 +5282,7 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://colab.research.google.com/github/pinilpypinilpy/sd-webui-colab-simplified/blob/main/Stable_Diffusion_WebUi_Simplified.ipynb#scrollTo=gk1TyBA0Arxt",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "CoLab"
  },
  {
   "productName": "Stable Diffusion General Updates Posted by u/ImeniSottoITreni | Reddit",
@@ -5331,7 +5331,7 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://colab.research.google.com/github/TheLastBen/fast-stable-diffusion/blob/main/fast-DreamBooth.ipynb",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "CoLab"
  },
  {
   "productName": "Deforum Stable Diffusion",
@@ -5345,7 +5345,7 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://www.reddit.com/r/StableDiffusion/comments/xgbug2/depainting_historical_photographs/",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Graph"
  },
  {
   "productName": "img2img animation with hands | Reddit",
@@ -5436,7 +5436,7 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://www.topazlabs.com/gigapixel-ai",
   "pricingModel": "PAID",
-  "startupName": null
+  "startupName": "Giga"
  },
  {
   "productName": "Image Super-Resolution",
@@ -5485,7 +5485,7 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://melies.co/",
   "pricingModel": null,
-  "startupName": "Melies"
+  "startupName": "Elie"
  },
  {
   "productName": "Pyramid Flow",
@@ -5499,7 +5499,7 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://infinity.ai/",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Fini"
  },
  {
   "productName": "Sora",
@@ -5534,7 +5534,7 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://research.nvidia.com/labs/toronto-ai/VideoLDM/",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Latent"
  },
  {
   "productName": "Gen-2 by Runway",
@@ -5632,7 +5632,7 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://ultimatevocalremover.com/",
   "pricingModel": null,
-  "startupName": "Ultimate Vocal Remover"
+  "startupName": "Remo"
  },
  {
   "productName": "Introducing Voicebox",
@@ -5716,7 +5716,7 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://app.coval.dev/the-ultimate-voice-ai-stack",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Coval"
  },
  {
   "productName": "Parler-TTS",
@@ -5779,7 +5779,7 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://studio.d-id.com/",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "D-ID"
  },
  {
   "productName": "Speech Studio - Microsoft Azure",
@@ -5800,7 +5800,7 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://illuminate.google.com/home?pli=1",
   "pricingModel": null,
-  "startupName": "Illuminate"
+  "startupName": "Lumina"
  },
  {
   "productName": "Introducing Universal-1",
@@ -5877,7 +5877,7 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://laion-aesthetic.datasette.io/laion-aesthetic-6pls/images",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Aesthetic"
  },
  {
   "productName": "LAION",
@@ -5905,14 +5905,14 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://www.instagram.com/deep_music_visualizer/",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "VISUA"
  },
  {
   "productName": "Lucid Sonic Dreams (@lucidsonicdreams)",
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://www.instagram.com/lucidsonicdreams/",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Lucid"
  },
  {
   "productName": "Artificial Images",
@@ -6010,7 +6010,7 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://aican.io/",
   "pricingModel": null,
-  "startupName": "AICAN"
+  "startupName": "AICA"
  },
  {
   "productName": "Ganvas Studio - Neural Network Paintings",
@@ -6024,7 +6024,7 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://hatroid.com/collections/synthetic-feather/products/syn-feather-sweater-strelitzia",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Feather"
  },
  {
   "productName": "fMRI-to-image",
@@ -6136,7 +6136,7 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://sitespeak.ai",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Speak"
  },
  {
   "productName": "Room Reinvented",
@@ -6164,7 +6164,7 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://neverjobless.com/?ref=filipecalegario-awesome-generative-ai",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Sage"
  },
  {
   "productName": "Aispect",
@@ -6185,7 +6185,7 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://www.presspulse.ai/?ref=filipecalegario-awesome-generative-ai",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Pulse"
  },
  {
   "productName": "GPTHelp.ai",
@@ -6241,14 +6241,14 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://datarefiner.com/feed/why-tda",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Topo"
  },
  {
   "productName": "Visualizing Data using t-SNE",
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://jmlr.org/papers/v9/vandermaaten08a.html",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "VISUA"
  },
  {
   "productName": "Prompt Engineering Roadmap - roadmap.sh",
@@ -6262,7 +6262,7 @@
   "sourceName": "GitHub:awesome-generative-ai (filipecalegario)",
   "sourceUrl": "https://www.deeplearning.ai/short-courses/",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Shor"
  },
  {
   "productName": "GitHub Copilot",
@@ -6290,7 +6290,7 @@
   "sourceName": "GitHub:awesome-ai-tools",
   "sourceUrl": "https://aitools.inc/tools/phind",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Phind"
  },
  {
   "productName": "Code Snippets AI",
@@ -6346,7 +6346,7 @@
   "sourceName": "GitHub:awesome-ai-tools",
   "sourceUrl": "https://aitools.inc/tools/blazesql",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Blaze"
  },
  {
   "productName": "SQLAI.AI",
@@ -6479,7 +6479,7 @@
   "sourceName": "GitHub:awesome-ai-tools",
   "sourceUrl": "https://aitools.inc/tools/sudowrite",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "SUDO"
  },
  {
   "productName": "Rytr",
@@ -6577,14 +6577,14 @@
   "sourceName": "GitHub:awesome-ai-tools",
   "sourceUrl": "https://aitools.inc/tools/flickify",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Flick"
  },
  {
   "productName": "Powder",
   "sourceName": "GitHub:awesome-ai-tools",
   "sourceUrl": "https://aitools.inc/tools/powder",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Powder"
  },
  {
   "productName": "Machined",
@@ -6654,7 +6654,7 @@
   "sourceName": "GitHub:awesome-ai-tools",
   "sourceUrl": "https://aitools.inc/tools/makelanding-ai",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Andi"
  },
  {
   "productName": "HoppyCopy",
@@ -6759,7 +6759,7 @@
   "sourceName": "GitHub:awesome-ai-tools",
   "sourceUrl": "https://aitools.inc/tools/nureply",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Reply"
  },
  {
   "productName": "Leadzen AI",
@@ -6829,7 +6829,7 @@
   "sourceName": "GitHub:awesome-ai-tools",
   "sourceUrl": "https://aitools.inc/tools/playground-ai",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Playground"
  },
  {
   "productName": "Pixlr",
@@ -6927,7 +6927,7 @@
   "sourceName": "GitHub:awesome-ai-tools",
   "sourceUrl": "https://aitools.inc/tools/flair-ai",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Flai"
  },
  {
   "productName": "Caspa AI",
@@ -7088,14 +7088,14 @@
   "sourceName": "GitHub:awesome-ai-tools",
   "sourceUrl": "https://aitools.inc/tools/nova-ai",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Nova"
  },
  {
   "productName": "Clipchamp",
   "sourceName": "GitHub:awesome-ai-tools",
   "sourceUrl": "https://aitools.inc/tools/clipchamp",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Champ"
  },
  {
   "productName": "Vmaker AI",
@@ -7123,7 +7123,7 @@
   "sourceName": "GitHub:awesome-ai-tools",
   "sourceUrl": "https://aitools.inc/tools/shortmake",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Shor"
  },
  {
   "productName": "Vsub",
@@ -7179,21 +7179,21 @@
   "sourceName": "GitHub:awesome-ai-tools",
   "sourceUrl": "https://aitools.inc/tools/synthesia",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Synth"
  },
  {
   "productName": "Creative Reality Studio (D-ID)",
   "sourceName": "GitHub:awesome-ai-tools",
   "sourceUrl": "https://aitools.inc/tools/creative-reality-studio-d-id",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "D-ID"
  },
  {
   "productName": "DeepMotion",
   "sourceName": "GitHub:awesome-ai-tools",
   "sourceUrl": "https://aitools.inc/tools/deepmotion",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Motion"
  },
  {
   "productName": "Animaker",
@@ -7270,7 +7270,7 @@
   "sourceName": "GitHub:awesome-ai-tools",
   "sourceUrl": "https://aitools.inc/tools/happy-scribe",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Scribe"
  },
  {
   "productName": "Shownotes",
@@ -7298,7 +7298,7 @@
   "sourceName": "GitHub:awesome-ai-tools",
   "sourceUrl": "https://aitools.inc/tools/turboscribe",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Scribe"
  },
  {
   "productName": "Wordly",
@@ -7410,7 +7410,7 @@
   "sourceName": "GitHub:awesome-ai-tools",
   "sourceUrl": "https://aitools.inc/tools/altered-ai",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Alter"
  },
  {
   "productName": "FineShare",
@@ -7424,7 +7424,7 @@
   "sourceName": "GitHub:awesome-ai-tools",
   "sourceUrl": "https://aitools.inc/tools/uberduck",
   "pricingModel": null,
-  "startupName": null
+  "startupName": "Uberduck"
  },
  {
   "productName": "DoNotPay",
